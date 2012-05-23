@@ -100,7 +100,7 @@ public abstract class UserPreferencesBase {
 	public boolean reloadFileIfModified() {
 		if (lastLoadedFile == null)
 			throw new RuntimeException("attempting to reload file before it has been loaded");
-		if (lastLoadedFile.lastModified() == lastLoadedFileTimestamp)
+		if (!lastLoadedFile.exists() || lastLoadedFile.lastModified() == lastLoadedFileTimestamp)
 			return false;
 		log.info("file change detected, reloading preferences");
 		load(lastLoadedFile);
