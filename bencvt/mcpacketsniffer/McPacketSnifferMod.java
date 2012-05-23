@@ -62,6 +62,7 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 		preferences.load(new File(modDirectory, "options.txt"));
 		modEnabled = preferences.modEnabled;
 		ModLoader.setInGameHook(this, true, true);
+		PacketHooks.register(this);
 		getPacketShortName(0); // force class loader to load PacketInfo so it can do its sanity checking right away
 	}
 
@@ -120,7 +121,7 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 			receivePacketBytes[packet.getPacketId()] += PACKET_HEADER_SIZE + getPacketPayloadSize(packet);
 		}
 
-		if (packetLog == null || !startPacketLog())
+		if (packetLog == null && !startPacketLog())
 			return;
 
 		if (!preferences.packetWhitelist.isEmpty() && !preferences.packetWhitelist.contains(packet.getPacketId()))
