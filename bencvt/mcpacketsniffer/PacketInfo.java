@@ -18,6 +18,8 @@ import net.minecraft.src.*;
  * This reference class lists the two names for each packet side-by-side. It also provides a third,
  * shorthand name of each packet suitable for logging, usually based off the Minecraft Coalition
  * version.
+ * 
+ * @author bencvt
  */
 public class PacketInfo {
 	public static final Map<Integer, PacketInfo> ALL_PACKETS = new HashMap();

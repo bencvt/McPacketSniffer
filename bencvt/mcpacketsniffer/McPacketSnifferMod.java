@@ -9,12 +9,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.*;
+import bencvt.mcpacketsniffer.commons.ModDirectory;
+import bencvt.mcpacketsniffer.commons.ModLogger;
 
 /**
  * Log packets.
@@ -29,10 +30,11 @@ public abstract class McPacketSnifferMod extends BaseMod {
 	public static final int PACKET_HEADER_SIZE = 1; // byte packetId
 
 	public static McPacketSnifferMod instance;
-	private UserPreferences preferences = new UserPreferences();
+	public ModDirectory modDirectory = new ModDirectory(this);
+	public ModLogger log = new ModLogger(this, modDirectory);
+	public UserPreferences preferences = new UserPreferences(this);
 	private boolean modEnabled = true;
 	private Minecraft minecraft;
-	private File modDirectory;
 	private File statsFile;
 	private PrintWriter packetLog;
 	private boolean forceFlush;
@@ -48,7 +50,6 @@ public abstract class McPacketSnifferMod extends BaseMod {
 		if (instance != null)
 			throw new RuntimeException("multiple instances of singleton");
 		instance = this;
-		getPacketShortName(0); // force class loader to load PacketInfo so it can do its sanity checking right away
 	}
 
 	@Override
@@ -58,10 +59,10 @@ public abstract class McPacketSnifferMod extends BaseMod {
 
 	@Override
 	public void load() {
-		modDirectory = Log.initForMod(this, "mcpacketsniffer");
 		preferences.load(new File(modDirectory, "options.txt"));
 		modEnabled = preferences.modEnabled;
 		ModLoader.setInGameHook(this, true, true);
+		getPacketShortName(0); // force class loader to load PacketInfo so it can do its sanity checking right away
 	}
 
 	@Override
@@ -95,7 +96,7 @@ public abstract class McPacketSnifferMod extends BaseMod {
 		try {
 			packetLog = new PrintWriter(new BufferedWriter(new FileWriter(packetLogFile)));
 		} catch (IOException e) {
-			Log.getLogger().log(Level.SEVERE, "unable to open packet log file for writing: " + packetLogFile, e);
+			log.severe(e, "unable to open packet log file for writing: ");
 			modEnabled = false;
 			return false;
 		}
@@ -235,7 +236,7 @@ public abstract class McPacketSnifferMod extends BaseMod {
 		case 0xFE: dumpPacket0xFEServerPing(line, (Packet254ServerPing) packet); break;
 		case 0xFF: dumpPacket0xFFKickDisconnect(line, (Packet255KickDisconnect) packet); break;
 		default:
-			Log.getLogger().severe("unhandled packet " + packetName + ", class=" + packet.getClass());
+			log.severe("unhandled packet " + packetName + ", class=" + packet.getClass());
 			line.append(" size~=").append(getPacketPayloadSize(packet));
 			// we don't have access to the actual payload
 			break;
@@ -577,27 +578,27 @@ public abstract class McPacketSnifferMod extends BaseMod {
 		int zBase = packet.zPosition << 4;
 		DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(packet.metadataArray));
 		try {
-	        for (int k = 0; k < packet.size; k++)
-	        {
-	            short wordPos = dataStream.readShort();
-	            short wordBlock = dataStream.readShort();
-	            int xOff = (wordPos >> 12) & 0xf;
-	            int zOff = (wordPos >> 8) & 0xf;
-	            int yAbs = wordPos & 0xff;
-	            int blockId = (wordBlock & 0xfff) >> 4;
-	            int blockMetadata = wordBlock & 0xf;
+			for (int k = 0; k < packet.size; k++)
+			{
+				short wordPos = dataStream.readShort();
+				short wordBlock = dataStream.readShort();
+				int xOff = (wordPos >> 12) & 0xf;
+				int zOff = (wordPos >> 8) & 0xf;
+				int yAbs = wordPos & 0xff;
+				int blockId = (wordBlock & 0xfff) >> 4;
+		int blockMetadata = wordBlock & 0xf;
 
-	    		if (!first)
-	    			line.append(' ');
-	    		first = false;
-	            line.append('(').append(xBase + xOff);
-	            line.append(',').append(yAbs);
-	            line.append(',').append(zBase + zOff);
-	            line.append("):");
-	            line.append(blockId);
-	            line.append('d');
-	            line.append(blockMetadata);
-	        }
+		if (!first)
+			line.append(' ');
+		first = false;
+		line.append('(').append(xBase + xOff);
+		line.append(',').append(yAbs);
+		line.append(',').append(zBase + zOff);
+		line.append("):");
+		line.append(blockId);
+		line.append('d');
+		line.append(blockMetadata);
+			}
 		} catch (IOException e) {
 			// do nothing
 		}
@@ -607,9 +608,9 @@ public abstract class McPacketSnifferMod extends BaseMod {
 	private void dumpPacket0x35BlockChange(StringBuilder line, Packet53BlockChange packet) {
 		dumpCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
 		line.append(" block=");
-        line.append(packet.type);
-        line.append('d');
-        line.append(packet.metadata);
+		line.append(packet.type);
+		line.append('d');
+		line.append(packet.metadata);
 	}
 
 	private void dumpPacket0x36PlayNoteBlock(StringBuilder line, Packet54PlayNoteBlock packet) {
@@ -626,13 +627,13 @@ public abstract class McPacketSnifferMod extends BaseMod {
 		boolean first = true;
 		// the original order is lost due to the use of HashSet
 		for (ChunkPosition pos : (Collection<ChunkPosition>) packet.destroyedBlockPositions) {
-    		if (!first)
-    			line.append(' ');
-    		first = false;
-            line.append('(').append(pos.x);
-            line.append(',').append(pos.y);
-            line.append(',').append(pos.z);
-            line.append(')');
+			if (!first)
+				line.append(' ');
+			first = false;
+			line.append('(').append(pos.x);
+			line.append(',').append(pos.y);
+			line.append(',').append(pos.z);
+			line.append(')');
 		}
 		line.append(']');
 	}
@@ -1023,7 +1024,7 @@ public abstract class McPacketSnifferMod extends BaseMod {
 			writeStatsTable(writer, interval, sentPacketCounts, sentPacketBytes);
 			writer.close();
 		} catch (IOException e) {
-			Log.getLogger().log(Level.SEVERE, "unable to dump stats", e);
+			log.severe(e, "unable to dump stats");
 		}
 	}
 
@@ -1080,7 +1081,7 @@ public abstract class McPacketSnifferMod extends BaseMod {
 	private static void assertOrLogError(boolean condition) {
 		if (!condition) {
 			// log stack trace but don't actually throw the exception
-			Log.getLogger().log(Level.SEVERE, "assertion failed", new Exception());
+			instance.log.severe(new Exception(), "assertion failed");
 		}
 	}
 }
