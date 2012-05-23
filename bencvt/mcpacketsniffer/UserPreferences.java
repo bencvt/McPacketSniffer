@@ -15,8 +15,11 @@ public class UserPreferences extends UserPreferencesBase {
 	/** If true, don't include a timestamp in the packet/stat filenames, and just overwrite them each time. */
 	public boolean outputMultiple;
 
-	/** Packet types to not parse; they'll still be included in stats though. */
-	public SortedSet<Integer> packetBlacklist;
+	/**
+	 * If non-empty, only these packet types will be parse/logged.
+	 * Even with a whitelist, all packets will still be included in stats.
+	 */
+	public SortedSet<Integer> packetWhitelist;
 
 	/** Whether to include the full uncompressed chunk data from packet 51(0x33) in the logs. */
 	public boolean packet0x33LogAll;
@@ -35,7 +38,7 @@ public class UserPreferences extends UserPreferencesBase {
 	public void resetToDefaults() {
 		modEnabled = true;
 		outputMultiple = true;
-		packetBlacklist = new TreeSet();
+		packetWhitelist = new TreeSet();
 		packet0x33LogAll = false;
 		packet0x83LogAll = false;
 		statsWriteIntervalSeconds = 60;
@@ -51,12 +54,12 @@ public class UserPreferences extends UserPreferencesBase {
 			packet0x33LogAll = parseBooleanStrict(value);
 		} else if (key.equals("packet.0x83.logall")) {
 			packet0x83LogAll = parseBooleanStrict(value);
-		} else if (key.equals("packet.blacklist")) {
-			packetBlacklist.clear();
+		} else if (key.equals("packet.whitelist")) {
+			packetWhitelist.clear();
 			for (String num : value.split(",")) {
 				num = num.trim();
 				if (!num.isEmpty()) {
-					packetBlacklist.add(Integer.decode(num));
+					packetWhitelist.add(Integer.decode(num));
 				}
 			}
 		} else if (key.equals("stats.writeintervalseconds")) {
@@ -75,7 +78,7 @@ public class UserPreferences extends UserPreferencesBase {
 		props.setProperty("output.multiple", Boolean.toString(outputMultiple));
 		props.setProperty("packet.0x33.logall", Boolean.toString(packet0x33LogAll));
 		props.setProperty("packet.0x83.logall", Boolean.toString(packet0x83LogAll));
-		props.setProperty("packet.blacklist", join(packetBlacklist));
+		props.setProperty("packet.whitelist", join(packetWhitelist));
 		props.setProperty("stats.writeintervalseconds", Integer.toString(statsWriteIntervalSeconds));
 		return props;
 	}

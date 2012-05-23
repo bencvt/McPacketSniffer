@@ -123,7 +123,7 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 		if (packetLog == null || !startPacketLog())
 			return;
 
-		if (preferences.packetBlacklist.contains(packet.getPacketId()))
+		if (!preferences.packetWhitelist.isEmpty() && !preferences.packetWhitelist.contains(packet.getPacketId()))
 			return;
 
 		StringBuilder line = new StringBuilder(160);
