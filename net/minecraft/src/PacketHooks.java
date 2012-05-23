@@ -26,7 +26,7 @@ public class PacketHooks {
 		packetEventListeners.remove(listener);
 	}
 
-    // ====
+	// ====
 	// ==== Dispatch functions, should only be called from modified vanilla classes
 	// ====
 
