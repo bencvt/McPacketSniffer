@@ -2,6 +2,7 @@ package bencvt.mcpacketsniffer.commons;
 
 import java.io.File;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.BaseMod;
 
 /**
@@ -18,8 +19,8 @@ public class ModDirectory extends File {
 		this(getModShortName(mod), true);
 	}
 
-	public ModDirectory(String pathname, boolean createIfNotExists) {
-		super(pathname);
+	public ModDirectory(String modName, boolean createIfNotExists) {
+		super(Minecraft.getMinecraftDir().getPath() + File.separator + "mods" + File.separator + modName);
 		if (createIfNotExists)
 			createIfNotExists();
 	}
