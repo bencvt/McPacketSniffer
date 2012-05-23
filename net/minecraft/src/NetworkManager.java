@@ -84,7 +84,11 @@ public class NetworkManager
     public int chunkDataSendCounter;
     private int field_20100_w;
 
-    public NetworkManager(Socket par1Socket, String par2Str, NetHandler par3NetHandler) throws IOException
+    // Begin modified code
+	public static PacketHooks packetHooks = new PacketHooks();
+    // End modified code
+
+	public NetworkManager(Socket par1Socket, String par2Str, NetHandler par3NetHandler) throws IOException
     {
         sendQueueLock = new Object();
         isRunning = true;
@@ -166,7 +170,7 @@ public class NetworkManager
                 }
 
                 // ==== Begin modified code
-                mod_McPacketSniffer.instance.onPacket(packet, true);
+                packetHooks.dispatchEvent(packet, true);
                 // ==== End modified code
                 Packet.writePacket(packet, socketOutputStream);
                 field_28144_e[packet.getPacketId()] += packet.getPacketSize() + 1;
@@ -184,7 +188,7 @@ public class NetworkManager
                 }
 
                 // ==== Begin modified code
-                mod_McPacketSniffer.instance.onPacket(packet1, true);
+                packetHooks.dispatchEvent(packet1, true);
                 // ==== End modified code
                 Packet.writePacket(packet1, socketOutputStream);
                 field_28144_e[packet1.getPacketId()] += packet1.getPacketSize() + 1;
@@ -334,7 +338,7 @@ public class NetworkManager
         {
             packet = (Packet)readPackets.remove(0);
             // ==== Begin modified code
-            mod_McPacketSniffer.instance.onPacket(packet, false);
+            packetHooks.dispatchEvent(packet, false);
             // ==== End modified code
         }
 

@@ -26,7 +26,7 @@ import bencvt.mcpacketsniffer.commons.ModLogger;
  * @see net.minecraft.src.mod_McPacketSniffer
  * @author bencvt
  */
-public abstract class McPacketSnifferMod extends BaseMod {
+public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.IPacketEventListener {
 	public static final int PACKET_HEADER_SIZE = 1; // byte packetId
 
 	public static McPacketSnifferMod instance;
@@ -107,12 +107,7 @@ public abstract class McPacketSnifferMod extends BaseMod {
 		return true;
 	}
 
-	// called from GuiMultiplayer
-	public synchronized void onPacketThreadSafe(Packet packet, boolean isSend) {
-		onPacket(packet, isSend);
-	}
-
-	// called from NetworkManager
+	@Override
 	public void onPacket(Packet packet, boolean isSend) {
 		if (!modEnabled)
 			return;

@@ -59,7 +59,11 @@ public class GuiMultiplayer extends GuiScreen
      */
     private ServerNBTStorage tempServer;
 
-    public GuiMultiplayer(GuiScreen par1GuiScreen)
+    // Begin modified code
+	public static PacketHooks packetHooks = new PacketHooks();
+    // End modified code
+
+	public GuiMultiplayer(GuiScreen par1GuiScreen)
     {
         serverList = new ArrayList();
         selectedServer = -1;
@@ -431,7 +435,7 @@ public class GuiMultiplayer extends GuiScreen
             datainputstream = new DataInputStream(socket.getInputStream());
             dataoutputstream = new DataOutputStream(socket.getOutputStream());
             // ==== Begin modified code
-            mod_McPacketSniffer.instance.onPacketThreadSafe(new Packet254ServerPing(), true);
+            packetHooks.dispatchEventSynchronized(new Packet254ServerPing(), true);
             // ==== End modified code
             dataoutputstream.write(254);
 
@@ -442,7 +446,7 @@ public class GuiMultiplayer extends GuiScreen
 
             String s4 = Packet.readString(datainputstream, 256);
             // ==== Begin modified code
-            mod_McPacketSniffer.instance.onPacketThreadSafe(new Packet255KickDisconnect(s4), false);
+            packetHooks.dispatchEventSynchronized(new Packet255KickDisconnect(s4), false);
             // ==== End modified code
             char ac[] = s4.toCharArray();
 
