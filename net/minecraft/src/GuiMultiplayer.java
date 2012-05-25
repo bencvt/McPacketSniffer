@@ -15,7 +15,7 @@ public class GuiMultiplayer extends GuiScreen
 
     /** Lock object for use with synchronized() */
     private static Object lock = new Object();
-
+    
     /**
      * A reference to the screen object that created this. Used for navigating between screens.
      */
@@ -60,10 +60,10 @@ public class GuiMultiplayer extends GuiScreen
     private ServerNBTStorage tempServer;
 
     // Begin modified code
-	public static PacketHooks packetHooks = new PacketHooks();
+    public static PacketHooks packetHooks = new PacketHooks();
     // End modified code
 
-	public GuiMultiplayer(GuiScreen par1GuiScreen)
+    public GuiMultiplayer(GuiScreen par1GuiScreen)
     {
         serverList = new ArrayList();
         selectedServer = -1;
@@ -434,10 +434,10 @@ public class GuiMultiplayer extends GuiScreen
             socket.connect(new InetSocketAddress(s1, j), 3000);
             datainputstream = new DataInputStream(socket.getInputStream());
             dataoutputstream = new DataOutputStream(socket.getOutputStream());
+            dataoutputstream.write(254);
             // ==== Begin modified code
             packetHooks.dispatchEventSynchronized(new Packet254ServerPing(), true);
             // ==== End modified code
-            dataoutputstream.write(254);
 
             if (datainputstream.read() != 255)
             {

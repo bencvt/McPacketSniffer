@@ -1,6 +1,6 @@
 package net.minecraft.src;
 
-import bencvt.mcpacketsniffer.McPacketSnifferMod;
+import bencvt.minecraft.client.mcpacketsniffer.McPacketSnifferMod;
 
 /** @author bencvt */
 public class mod_McPacketSniffer extends McPacketSnifferMod {

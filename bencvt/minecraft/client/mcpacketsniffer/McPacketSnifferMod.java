@@ -1,4 +1,4 @@
-package bencvt.mcpacketsniffer;
+package bencvt.minecraft.client.mcpacketsniffer;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.*;
-import bencvt.mcpacketsniffer.commons.ModDirectory;
-import bencvt.mcpacketsniffer.commons.ModLogger;
+import bencvt.minecraft.client.commons.ModDirectory;
+import bencvt.minecraft.client.commons.ModLogger;
 
 /**
  * Log packets.
@@ -30,14 +30,14 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 	public static final int PACKET_HEADER_SIZE = 1; // byte packetId
 
 	public static McPacketSnifferMod instance;
-	public ModDirectory modDirectory = new ModDirectory(this);
+	public ModDirectory modDirectory = new ModDirectory(this);	
 	public ModLogger log = new ModLogger(this, modDirectory);
 	public UserPreferences preferences = new UserPreferences(this);
 	private boolean modEnabled = true;
 	private Minecraft minecraft;
 	private File statsFile;
 	private PrintWriter packetLog;
-	private boolean forceFlush;
+	private boolean forceFlush; // certain packets force a log flush even if preferences.packetLogFlush is false
 	private long started;
 	private long lastSaveStats;
 	private long lastPreferencesCheck;
@@ -88,14 +88,16 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 	private boolean startPacketLog() {
 		long now = System.currentTimeMillis();
 		String suffix = "";
+		boolean append = false;
 		if (preferences.outputMultiple) {
 			// e.g., "_20120518_133948"
 			suffix = "_" + timestampToString(now).replace(' ', '_').replaceAll("[:\\-]", "").substring(0, 15);
+			append = true;
 		}
 
 		File packetLogFile = new File(modDirectory, "packets" + suffix + ".txt");
 		try {
-			packetLog = new PrintWriter(new BufferedWriter(new FileWriter(packetLogFile)));
+			packetLog = new PrintWriter(new BufferedWriter(new FileWriter(packetLogFile, append)));
 		} catch (IOException e) {
 			log.severe(e, "unable to open packet log file for writing: ");
 			modEnabled = false;
@@ -132,7 +134,7 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 		line.append(' ');
 		dumpPacket(line, packet, isSend);
 		packetLog.println(line.toString());
-		if (forceFlush) {
+		if (forceFlush || preferences.packetLogFlush) {
 			forceFlush = false;
 			packetLog.flush();
 		}
@@ -788,7 +790,11 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 	// ====
 
 	private static Pattern printable = Pattern.compile("(\\\\|[^\\p{Print}])");
-	private static void dumpPrintable(StringBuilder line, String s) {
+	private void dumpPrintable(StringBuilder line, String s) {
+		if (preferences.formatAmpersandColor) {
+			s = s.replace("&", "&&").replace('\247', '&');
+		}
+
 		Matcher m = printable.matcher(s);
 		StringBuffer b = new StringBuffer(s.length()); // derp http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5066679
 		while (m.find()) {
@@ -807,7 +813,7 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 		m.appendTail(b);
 		line.append('[').append(b.toString()).append(']');
 	}
-	private static void dumpPrintable(StringBuilder line, byte[] data) {
+	private void dumpPrintable(StringBuilder line, byte[] data) {
 		dumpPrintable(line, new String(data));
 	}
 
@@ -959,7 +965,7 @@ public abstract class McPacketSnifferMod extends BaseMod implements PacketHooks.
 	/**
 	 * @see http://mc.kev009.com/Entities
 	 */
-	private static void dumpEntityMetadata(StringBuilder line, List<WatchableObject> metadata) {
+	private void dumpEntityMetadata(StringBuilder line, List<WatchableObject> metadata) {
 		line.append('[');
 		boolean first = true;
 		for (WatchableObject obj : metadata) {

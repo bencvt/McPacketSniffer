@@ -85,10 +85,10 @@ public class NetworkManager
     private int field_20100_w;
 
     // Begin modified code
-	public static PacketHooks packetHooks = new PacketHooks();
+    public static PacketHooks packetHooks = new PacketHooks();
     // End modified code
 
-	public NetworkManager(Socket par1Socket, String par2Str, NetHandler par3NetHandler) throws IOException
+    public NetworkManager(Socket par1Socket, String par2Str, NetHandler par3NetHandler) throws IOException
     {
         sendQueueLock = new Object();
         isRunning = true;

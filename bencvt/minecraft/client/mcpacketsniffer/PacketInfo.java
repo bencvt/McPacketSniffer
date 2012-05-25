@@ -1,4 +1,4 @@
-package bencvt.mcpacketsniffer;
+package bencvt.minecraft.client.mcpacketsniffer;
 
 import java.util.ArrayList;
 import java.util.Collection;
