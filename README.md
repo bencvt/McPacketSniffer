@@ -18,8 +18,8 @@ Usage
 -----
 
 First of all, get the jar.
-It's [located here](https://www.dropbox.com/sh/rrg4n7phfksvz9z/Rt3yLMYh7W/minecraft/clientmods/McPacketSniffer),
-or you can build it from source (see below).
+Either [download the latest release](https://github.com/bencvt/McPacketSniffer/downloads)
+or build it from source (see below).
 
 Patch the jar into your minecraft.jar like you would for any other client mod.
 I recommend a utility like
