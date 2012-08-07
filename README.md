@@ -1,4 +1,6 @@
-This is a client-side mod for Minecraft that logs every packet sent and received.
+This is a client-side mod for Minecraft that logs packets sent and received
+between the client and a Minecraft server. Packets are logged to a text file,
+one packet per line, one file per connection.
 
 Why bother modding the client when you could just use one of dozens of external
 utilities? Two main reasons:
@@ -12,20 +14,24 @@ utilities? Two main reasons:
    Minecraft protocol proxy or they have to interface with the Minecraft client
    somehow (i.e., read memory) to get at the key.
 
-=== Usage ===
+Usage
+-----
 
 First of all, get the jar.
 It's [located here](https://www.dropbox.com/sh/rrg4n7phfksvz9z/Rt3yLMYh7W/minecraft/clientmods/McPacketSniffer),
 or you can build it from source (see below).
 
 Patch the jar into your minecraft.jar like you would for any other client mod.
-I recommend a utility like Magic Launcher. Manually copying .class files is for
-the birds. Make sure you also have ModLoader installed.
+I recommend a utility like
+[Magic Launcher](http://www.minecraftforum.net/topic/939149-launcher-magic-launcher-098-mods-options-news/);
+manually copying .class files is for the birds.
+Make sure you also have ModLoader installed as well.
 
 The config and output files can be found in
 `<minecraft directory>/mods/McPacketSniffer/`.
 
-=== Build instructions ===
+Build instructions
+------------------
 
 Getting git and MCP (Minecraft Coder Pack) to play nice together is somewhat
 annoying, but here's how:
@@ -47,7 +53,5 @@ annoying, but here's how:
 
 6. Type `git checkout .` to restore the modified sources.
 
-7. Run the `recompile` MCP script to make sure everything built correctly.
-   There may be issues if MCP has new field mappings.
-
-8. Run the `build-mcpacketsniffer` script.
+7. Run the `build-mcpacketsniffer` script.
+   There may be issues if MCP has new packet class field mappings.
