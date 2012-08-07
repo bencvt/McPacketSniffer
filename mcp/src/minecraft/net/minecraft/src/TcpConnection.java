@@ -86,6 +86,10 @@ public class TcpConnection implements NetworkManager
     private PrivateKey field_74463_A;
     private int field_74464_B;
 
+    // ==== Begin modified code
+    public static final PacketHooks packetHooksClient = new PacketHooks();
+    // ==== End modified code
+
     public TcpConnection(Socket par1Socket, String par2Str, NetHandler par3NetHandler) throws IOException
     {
         this(par1Socket, par2Str, par3NetHandler, (PrivateKey)null);
@@ -130,6 +134,9 @@ public class TcpConnection implements NetworkManager
         this.writeThread = new TcpWriterThread(this, par2Str + " write thread");
         this.readThread.start();
         this.writeThread.start();
+        // ==== Begin modified code
+        packetHooksClient.dispatchNewConnectionEvent(this);
+        // ==== End modified code
     }
 
     public void closeConnections()
@@ -189,6 +196,9 @@ public class TcpConnection implements NetworkManager
 
                 if (var2 != null)
                 {
+                    // ==== Begin modified code
+                    packetHooksClient.dispatchPacketEvent(this, var2, true, false);
+                    // ==== End modified code
                     Packet.writePacket(var2, this.socketOutputStream);
 
                     if (var2 instanceof Packet252SharedKey && !this.isOutputEncrypted)
@@ -214,6 +224,9 @@ public class TcpConnection implements NetworkManager
 
                 if (var2 != null)
                 {
+                    // ==== Begin modified code
+                    packetHooksClient.dispatchPacketEvent(this, var2, true, false);
+                    // ==== End modified code
                     Packet.writePacket(var2, this.socketOutputStream);
                     var10000 = field_74467_d;
                     var10001 = var2.getPacketId();
@@ -335,6 +348,9 @@ public class TcpConnection implements NetworkManager
                     if (var2.isWritePacket() && this.theNetHandler.canProcessPackets())
                     {
                         this.field_74490_x = 0;
+                        // ==== Begin modified code
+                        packetHooksClient.dispatchPacketEvent(this, var2, false, true);
+                        // ==== End modified code
                         var2.processPacket(this.theNetHandler);
                     }
                     else
@@ -429,6 +445,9 @@ public class TcpConnection implements NetworkManager
         while (!this.readPackets.isEmpty() && var1-- >= 0)
         {
             Packet var2 = (Packet)this.readPackets.remove(0);
+            // ==== Begin modified code
+            packetHooksClient.dispatchPacketEvent(this, var2, false, false);
+            // ==== End modified code
             var2.processPacket(this.theNetHandler);
         }
 

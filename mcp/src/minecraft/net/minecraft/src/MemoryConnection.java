@@ -20,9 +20,21 @@ public class MemoryConnection implements NetworkManager
     private Object[] field_74439_g;
     private boolean gamePaused = false;
 
+    // ==== Begin modified code
+    public static final PacketHooks packetHooksClient = new PacketHooks();
+    public boolean clientSide;
+    // ==== End modified code
+
     public MemoryConnection(NetHandler par1NetHandler) throws IOException
     {
         this.myNetHandler = par1NetHandler;
+        // ==== Begin modified code
+        // HACK: to minimize the number of classes we have to patch, examine the stack track to see who created this connection
+        clientSide = Thread.currentThread().getStackTrace()[2].getClassName().equals(NetClientHandler.class.getName());
+        if (clientSide) {
+            packetHooksClient.dispatchNewConnectionEvent(this);
+        }
+        // ==== End modified code
     }
 
     public void setNetHandler(NetHandler par1NetHandler)
@@ -38,6 +50,11 @@ public class MemoryConnection implements NetworkManager
         if (!this.shuttingDown)
         {
             this.pairedConnection.processOrCachePacket(par1Packet);
+            // ==== Begin modified code
+            if (clientSide) {
+                packetHooksClient.dispatchPacketEvent(this, par1Packet, true, false);
+            }
+            // ==== End modified code
         }
     }
 
@@ -67,6 +84,11 @@ public class MemoryConnection implements NetworkManager
         while (var1-- >= 0 && !this.readPacketCache.isEmpty())
         {
             Packet var2 = (Packet)this.readPacketCache.remove(0);
+            // ==== Begin modified code
+            if (clientSide) {
+                packetHooksClient.dispatchPacketEvent(this, var2, false, false);
+            }
+            // ==== End modified code
             var2.processPacket(this.myNetHandler);
         }
 
@@ -144,6 +166,11 @@ public class MemoryConnection implements NetworkManager
     {
         if (par1Packet.isWritePacket() && this.myNetHandler.canProcessPackets())
         {
+            // ==== Begin modified code
+            if (clientSide) {
+                packetHooksClient.dispatchPacketEvent(this, par1Packet, false, true);
+            }
+            // ==== End modified code
             par1Packet.processPacket(this.myNetHandler);
         }
         else
