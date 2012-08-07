@@ -2,7 +2,7 @@ package net.minecraft.src;
 
 import bencvt.minecraft.client.mcpacketsniffer.LogManager;
 
-public class mod_McPacketLogger extends BaseMod {
+public class mod_McPacketSniffer extends BaseMod {
     @Override
     public void load() {
         new LogManager(ModLoader.getMinecraftInstance()).init();

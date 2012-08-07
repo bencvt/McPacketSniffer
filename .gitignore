@@ -1,4 +1,5 @@
 /mcp/*
+!/mcp/build-mcpacketsniffer.*
 !/mcp/src
 /mcp/src/*
 !/mcp/src/minecraft
