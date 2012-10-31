@@ -144,7 +144,8 @@ public class PacketLoggers extends PacketLoggersBase {
 
     @PacketLogger(id=4, hex=0x04)
     public void logPacketUpdateTime(StringBuilder line, PacketDirection dir, Packet4UpdateTime packet) {
-        line.append("time=").append(packet.time);
+        line.append("age=").append(packet.field_82562_a); // ticks
+        line.append(" timeofday= ").append(packet.time); // ticks modulo 24000
     }
 
     @PacketLogger(id=5, hex=0x05)
@@ -590,6 +591,7 @@ public class PacketLoggers extends PacketLoggersBase {
         line.append(" effect=");
         CodeTable.soundOrParticleEffect.log(line, packet.sfxID);
         line.append(" extradata=").append(packet.auxData);
+        line.append(" staticvolume=").append(packet.func_82560_d());
     }
 
     @PacketLogger(id=62, hex=0x3E)
@@ -768,6 +770,7 @@ public class PacketLoggers extends PacketLoggersBase {
         line.append(" color=").append(packet.getChatColours());
         line.append(" difficulty=");
         CodeTable.difficulty.log(line, packet.getDifficulty());
+        line.append(" showcape=").append(packet.func_82563_j());
     }
 
     @PacketLogger(id=205, hex=0xCD)
@@ -807,7 +810,7 @@ public class PacketLoggers extends PacketLoggersBase {
 
     @PacketLogger(id=254, hex=0xFE)
     public void logPacketServerPing(StringBuilder line, PacketDirection dir, Packet254ServerPing packet) {
-        // no payload
+        line.append("version=").append(packet.field_82559_a);
     }
 
     @PacketLogger(id=255, hex=0xFF)
