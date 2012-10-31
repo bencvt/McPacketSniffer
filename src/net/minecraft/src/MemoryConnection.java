@@ -103,6 +103,9 @@ public class MemoryConnection implements INetworkManager
         if (this.shuttingDown && this.readPacketCache.isEmpty())
         {
             this.myNetHandler.handleErrorMessage(this.shutdownReason, this.field_74439_g);
+            // ==== Begin modified code
+            packetHooksClient.dispatchForgeRemoteCloseConnectionEvent(this, myNetHandler);
+            // ==== End modified code
         }
     }
 
@@ -120,6 +123,11 @@ public class MemoryConnection implements INetworkManager
     public void serverShutdown()
     {
         this.shuttingDown = true;
+        // ==== Begin modified code
+        if (clientSide) {
+            packetHooksClient.dispatchCloseConnectionEvent(this, true, "Quitting", new Object[] {});
+        }
+        // ==== End modified code
     }
 
     /**
@@ -131,6 +139,11 @@ public class MemoryConnection implements INetworkManager
         this.shuttingDown = true;
         this.shutdownReason = par1Str;
         this.field_74439_g = par2ArrayOfObj;
+        // ==== Begin modified code
+        if (clientSide) {
+            packetHooksClient.dispatchCloseConnectionEvent(this, false, par1Str, par2ArrayOfObj);
+        }
+        // ==== End modified code
     }
 
     /**

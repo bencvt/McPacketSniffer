@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-JAR=$PWD/McPacketSniffer-3.0-SNAPSHOT.jar
+# replace with version number if creating a release
+# don't forget to update LogManager.VERSION and mod_McPacketSniffer.info
+JAR=$PWD/McPacketSniffer-SNAPSHOT.zip
 
 rm $JAR || true
 
@@ -18,5 +20,11 @@ echo "== Reobfuscating =="
 
 echo "== Packaging $JAR =="
 cd reobf/minecraft/
+rm -rf META-INF
+
+# resources
+cp -v ../../src/minecraft/*.info .
 cp -v ../../src/minecraft/com/bencvt/minecraft/mcpacketsniffer/*.properties com/bencvt/minecraft/mcpacketsniffer/
-jar cfv $JAR ./
+
+#jar cfv $JAR ./
+zip -r $JAR *

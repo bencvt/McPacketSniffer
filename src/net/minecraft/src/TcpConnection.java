@@ -418,6 +418,9 @@ public class TcpConnection implements INetworkManager
             {
                 ;
             }
+            // ==== Begin modified code
+            packetHooksClient.dispatchCloseConnectionEvent(this, false, par1Str, par2ArrayOfObj);
+            // ==== End modified code
         }
     }
 
@@ -459,6 +462,9 @@ public class TcpConnection implements INetworkManager
         if (this.isTerminating && this.readPackets.isEmpty())
         {
             this.theNetHandler.handleErrorMessage(this.terminationReason, this.field_74480_w);
+            // ==== Begin modified code
+            packetHooksClient.dispatchForgeRemoteCloseConnectionEvent(this, theNetHandler);
+            // ==== End modified code
         }
     }
 
@@ -481,6 +487,9 @@ public class TcpConnection implements INetworkManager
             this.isServerTerminating = true;
             this.readThread.interrupt();
             (new TcpMonitorThread(this)).start();
+            // ==== Begin modified code
+            packetHooksClient.dispatchCloseConnectionEvent(this, true, "Quitting", new Object[] {});
+            // ==== End modified code
         }
     }
 

@@ -5,20 +5,27 @@ import java.util.LinkedHashSet;
 /**
  * Provide an API for inspecting packets sent between the Minecraft client
  * and a Minecraft server. This can include the integrated server.
- * 
- * This does NOT capture every piece of data sent and received by the
- * Minecraft client. Known exceptions:
- *  - Server pings (client <-> server) @see GuiMultiplayer
- *  - Server login verification (client <-> session.minecraft.net) @see NetClientHandler, ThreadLoginVerifier
- *  - Account login (client launcher <-> login.minecraft.net)
- *  - Resource downloads (client <-> s3.amazonaws.com) @see ThreadDownloadResources
- *  - Skins and cloaks (client <-> skins.minecraft.net) @see EntityPlayerSP, EntityOtherPlayerMP
- *  - Usage reporting (client <-> snoop.minecraft.net) @see PlayerUsageSnooper
- * 
+ * <p>
+ * This does *not* capture every piece of data sent and received by the
+ * Minecraft client. Known exceptions:<ul>
+ * <li>Server pings (client <-> server):
+ *     {@link GuiMultiplayer}</li>
+ * <li>Server login verification (client <-> session.minecraft.net):
+ *     {@link NetClientHandler} and {@link ThreadLoginVerifier}</li>
+ * <li>Account login (client launcher <-> login.minecraft.net)</li>
+ * <li>Resource downloads (client <-> s3.amazonaws.com):
+ *     {@link ThreadDownloadResources}</li>
+ * <li>Skins and capes (client <-> skins.minecraft.net):
+ *     {@link EntityPlayerSP} and {@link EntityOtherPlayerMP}</li>
+ * <li>Usage reporting (client <-> snoop.minecraft.net):
+ *     {@link PlayerUsageSnooper}</li>
+ * <li>Mod-specific connections (client <-> wherever, e.g. the mod's website to
+ *     automatically check for updates)</li>
+ * </ul>
  * @author bencvt
  */
 public class PacketHooks {
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
 
     public interface ClientPacketEventListener {
         /**
@@ -42,6 +49,23 @@ public class PacketHooks {
          * @see Packet#isWritePacket
          */
         public void onPacket(INetworkManager connection, Packet packet, boolean send, boolean highPriority);
+
+        /**
+         * This event occurs whenever a TcpConnection or MemoryConnection
+         * closes.
+         * 
+         * @param connection
+         * @param voluntarily if true, the player chose to disconnect in the
+         *                    in-game GUI. If false, the server booted the
+         *                    player or the connection failed otherwise.
+         * @param reason the reason the connection was closed, e.g.
+         *               "disconnect.timeout".
+         * @param reasonArgs if this array is non-empty then reason's localized
+         *                   string is intended for use in String.format with
+         *                   these arguments. Only present for certain error
+         *                   types.
+         */
+        public void onCloseConnection(INetworkManager connection, boolean voluntarily, String reason, Object[] reasonArgs);
     }
 
     private static LinkedHashSet<ClientPacketEventListener> listeners = new LinkedHashSet<ClientPacketEventListener>();
@@ -98,7 +122,29 @@ public class PacketHooks {
         }
     }
 
+    protected void dispatchCloseConnectionEvent(INetworkManager connection, boolean voluntarily, String reason, Object[] reasonArgs) {
+        for (ClientPacketEventListener listener : listeners) {
+            listener.onCloseConnection(connection, voluntarily, reason, reasonArgs);
+        }
+    }
+
+    /**
+     * Forge compatibility
+     */
+    protected void dispatchForgeRemoteCloseConnectionEvent(INetworkManager connection, NetHandler netHandler) {
+        try {
+            EntityPlayer player = (EntityPlayer) NetHandler.class.getMethod("getPlayer").invoke(netHandler);
+            getClass()
+            .getClassLoader()
+            .loadClass("cpw.mods.fml.common.network.FMLNetworkHandler")
+            .getMethod("onConnectionClosed", INetworkManager.class, EntityPlayer.class)
+            .invoke(null, connection, player);
+        } catch (Throwable t) {
+            // Do nothing. Forge must not be installed.
+        }
+    }
+
     protected PacketHooks() {
-        // do nothing; just marking the constructor as protected
+        // Do nothing. Just marking the constructor as protected.
     }
 }

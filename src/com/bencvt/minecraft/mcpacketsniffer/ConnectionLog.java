@@ -114,12 +114,19 @@ public class ConnectionLog {
         flusherThread.start();
     }
 
-    public void stop() {
+    public void stop(String reason) {
         if (isRunning()) {
+            LogManager.eventLog.info("stopping log: " + reason);
+
             synchronized (logWriterLock) {
+                StringBuilder line = new StringBuilder();
+                PacketLoggersBase.logTimestamp(line, System.currentTimeMillis());
+                line.append(" connection closed: ").append(reason);
+                logWriter.println(line.toString());
                 logWriter.close();
                 logWriter = null;
             }
+
             stats.stop();
         }
     }

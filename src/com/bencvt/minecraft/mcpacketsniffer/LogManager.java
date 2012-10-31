@@ -17,7 +17,7 @@ import com.bencvt.minecraft.mcpacketsniffer.Util.FileLogger;
  */
 public class LogManager implements ClientPacketEventListener {
     public static final String NAME = "McPacketSniffer";
-    public static final String VERSION = "2.0-SNAPSHOT [1.3.1]";
+    public static final String VERSION = "3.0-SNAPSHOT [1.4.2]";
     public static final long OPTIONS_CHECK_RELOAD_INTERVAL = 20000;
     public static final long DUMP_STATS_INTERVAL = 30000;
 
@@ -54,7 +54,7 @@ public class LogManager implements ClientPacketEventListener {
     @Override
     public void onNewConnection(INetworkManager connection) {
         if (activeConnectionLog != null) {
-            activeConnectionLog.stop();
+            activeConnectionLog.stop("replaced"); // shouldn't happen
             activeConnectionLog = null;
         }
         if (options.INTEGRATED_SERVER || !(connection instanceof MemoryConnection)) {
@@ -67,6 +67,23 @@ public class LogManager implements ClientPacketEventListener {
     public void onPacket(INetworkManager connection, Packet packet, boolean send, boolean highPriority) {
         if (activeConnectionLog != null) {
             activeConnectionLog.onPacket(send ? PacketDirection.C2S : PacketDirection.S2C, packet);
+        }
+    }
+
+    @Override
+    public void onCloseConnection(INetworkManager connection, boolean voluntarily, String reason, Object[] reasonArgs) {
+        if (activeConnectionLog != null) {
+            if (reasonArgs.length > 0) {
+                reason += ": ";
+                for (int i = 0; i < reasonArgs.length; i++) {
+                    if (i > 0) {
+                        reason += ", ";
+                    }
+                    reason += String.valueOf(reasonArgs[i]);
+                }
+            }
+            activeConnectionLog.stop(reason);
+            activeConnectionLog = null;
         }
     }
 }

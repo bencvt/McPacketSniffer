@@ -1,24 +1,20 @@
 ## Build instructions
 
-Getting git and MCP (Minecraft Coder Pack) to play nice together is somewhat
-annoying, but here's how:
+If you just want to install the mod, skip this section and refer to the
+instructions in the main `README.md` document.
 
-1. Clone the repo.
-   `git clone git@github.com:bencvt/McPacketSniffer.git`
+### Stuff you'll need:
 
-2. Download the [latest MCP release](http://mcp.ocean-labs.de/index.php/MCP_Releases).
-   Extract the contents of the zip to `mcp/`. Don't worry about overwriting
-   `mcp/src/`; the files are safe in your local cloned git repo and will be
-   restored once MCP is set up.
+ +  The Java Development Kit (JDK)
+ +  A copy of `minecraft.jar` from your Minecraft installation
+ +  [Minecraft Coder Pack (MCP)](http://mcp.ocean-labs.de/index.php/MCP_Releases)
+ +  [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/)
 
-3. Run the `updatemcp` MCP script. Type Yes when prompted.
+### Step-by-step
 
-4. Copy your Minecraft's `bin/` directory to `mcp/jars/bin/`. Your minecraft.jar
-   should be vanilla plus ModLoader patched in.
-
-5. Run the `decompile` MCP script.
-
-6. Type `git checkout .` to restore the modified sources.
-
-7. Run the `build-mcpacketsniffer` script.
-   There may be issues if MCP has new packet class field mappings.
+1.  Patch `minecraft.jar` to include ModLoader, then install and configure MCP
+    using the modified `minecraft.jar`.  
+2.  Make sure you're able to recompile Minecraft before the next step.
+3.  Copy everything from this repo's `src/` directory to `src/minecraft/`.
+4.  Recompile, reobfuscate, and package the jar/zip. If you're on a Unix-based
+    system, you can use the `build-mcpacketsniffer.sh` script for this.
