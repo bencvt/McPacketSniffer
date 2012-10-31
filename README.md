@@ -14,44 +14,30 @@ utilities? Two main reasons:
    Minecraft protocol proxy or they have to interface with the Minecraft client
    somehow (i.e., read memory) to get at the key.
 
-Usage
------
+## Installation
 
-First of all, get the jar.
-Either [download the latest release](https://github.com/bencvt/McPacketSniffer/downloads)
-or build it from source (see below).
+Installing this mod works exactly the same as any other Minecraft client mod.
 
-Patch the jar into your minecraft.jar like you would for any other client mod.
-I recommend a utility like
-[Magic Launcher](http://www.minecraftforum.net/topic/939149-launcher-magic-launcher-098-mods-options-news/);
-manually copying .class files is for the birds.
-Make sure you also have ModLoader installed as well.
+1.  Make sure that either [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/)
+    or [Forge](http://www.minecraftforge.net/forum/) is installed, as this is a
+    base requirement.
+2.  Download and extract the zip for the latest release.
+3.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
+    remove the `META-INF` folder.
 
-The config and output files can be found in
-`<minecraft directory>/mods/McPacketSniffer/`.
+Utilities like [Magic Launcher](http://www.minecraftforum.net/topic/939149-/)
+can automate this process. Highly recommended! Manually copying `.class` files
+is for the birds.
 
-Build instructions
-------------------
+## Compatibility
 
-Getting git and MCP (Minecraft Coder Pack) to play nice together is somewhat
-annoying, but here's how:
+TODO
 
-1. Clone the repo.
-   `git clone git@github.com:bencvt/McPacketSniffer.git`
+## Usage
 
-2. Download the [latest MCP release](http://mcp.ocean-labs.de/index.php/MCP_Releases).
-   Extract the contents of the zip to `mcp/`. Don't worry about overwriting
-   `mcp/src/`; the files are safe in your local cloned git repo and will be
-   restored once MCP is set up.
+TODO
 
-3. Run the `updatemcp` MCP script. Type Yes when prompted.
+## More info
 
-4. Copy your Minecraft's `bin/` directory to `mcp/jars/bin/`. Your minecraft.jar
-   should be vanilla plus ModLoader patched in.
-
-5. Run the `decompile` MCP script.
-
-6. Type `git checkout .` to restore the modified sources.
-
-7. Run the `build-mcpacketsniffer` script.
-   There may be issues if MCP has new packet class field mappings.
+McPacketSniffer is open source! Visit the official project page at
+[github.com/bencvt/McPacketSniffer](https://github.com/bencvt/McPacketSniffer).
