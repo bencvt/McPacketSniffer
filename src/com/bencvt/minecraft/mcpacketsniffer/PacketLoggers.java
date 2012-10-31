@@ -9,7 +9,7 @@ import net.minecraft.src.*;
 /**
  * Worker class that converts each Packet type into a log line.
  */
-public class PacketLoggers {
+public class PacketLoggers extends PacketLoggersBase {
     // Annotation just for documentation. No reflection magic for dispatching for now.
     public @interface PacketLogger {
         int id();
@@ -95,7 +95,7 @@ public class PacketLoggers {
         case 0xFF: logPacketKickDisconnect(line, dir, (Packet255KickDisconnect) packet); break;
         default:
             LogManager.eventLog.severe("unhandled packet id=" + packet.getPacketId() + " class=" + packet.getClass());
-            LogUtils.logApproximatePacketPayloadSize(line, packet);
+            logApproximatePacketPayloadSize(line, packet);
             // we don't have access to the actual payload
         }
     }
@@ -113,9 +113,9 @@ public class PacketLoggers {
     public void logPacketLogin(StringBuilder line, PacketDirection dir, Packet1Login packet) {
         line.append("eid=").append(packet.clientEntityId);
         line.append(" worldtype=");
-        LogUtils.logWorldType(line, packet.terrainType);
+        logWorldType(line, packet.terrainType);
         line.append(" gamemode=");
-        LogUtils.logGameMode(line, packet.gameType);
+        logGameMode(line, packet.gameType);
         line.append(" hardcore=").append(packet.field_73560_c);
         line.append(" dimension=");
         CodeTable.dimension.log(line, packet.dimension);
@@ -129,7 +129,7 @@ public class PacketLoggers {
     public void logPacketClientProtocol(StringBuilder line, PacketDirection dir, Packet2ClientProtocol packet) {
         line.append("protocolversion=").append(packet.getProtocolVersion());
         line.append(" username=");
-        LogUtils.logString(line, packet.getUsername());
+        logString(line, packet.getUsername());
         line.append(" host=");
         line.append(Util.getFieldByType(packet, String.class, 1));
         line.append(" port=");
@@ -138,7 +138,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=3, hex=0x03)
     public void logPacketChat(StringBuilder line, PacketDirection dir, Packet3Chat packet) {
-        LogUtils.logString(line, packet.message);
+        logString(line, packet.message);
     }
 
     @PacketLogger(id=4, hex=0x04)
@@ -148,22 +148,22 @@ public class PacketLoggers {
 
     @PacketLogger(id=5, hex=0x05)
     public void logPacketPlayerInventory(StringBuilder line, PacketDirection dir, Packet5PlayerInventory packet) {
-        LogUtils.logExistingEntity(line, packet.entityID);
+        logExistingEntity(line, packet.entityID);
         line.append(" slot=").append(packet.slot);
         line.append(" item=");
-        LogUtils.logItemStack(line, packet.getItemSlot());
+        logItemStack(line, packet.getItemSlot());
     }
 
     @PacketLogger(id=6, hex=0x06)
     public void logPacketSpawnPosition(StringBuilder line, PacketDirection dir, Packet6SpawnPosition packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
     }
 
     @PacketLogger(id=7, hex=0x07)
     public void logPacketUseEntity(StringBuilder line, PacketDirection dir, Packet7UseEntity packet) {
         line.append("player=").append(packet.playerEntityId); // don't log the entire entity
         line.append(" target=");
-        LogUtils.logExistingEntity(line, packet.targetEntity);
+        logExistingEntity(line, packet.targetEntity);
         line.append(" leftclick=").append(packet.isLeftClick);
     }
 
@@ -181,10 +181,10 @@ public class PacketLoggers {
         line.append(" difficulty=");
         CodeTable.difficulty.log(line, packet.difficulty);
         line.append(" gamemode=");
-        LogUtils.logGameMode(line, packet.gameType);
+        logGameMode(line, packet.gameType);
         line.append(" unused=").append(packet.worldHeight);
         line.append(" worldtype=");
-        LogUtils.logWorldType(line, packet.terrainType);
+        logWorldType(line, packet.terrainType);
     }
 
     @PacketLogger(id=10, hex=0x0A)
@@ -194,7 +194,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=11, hex=0x0B)
     public void logPacketPlayerPosition(StringBuilder line, PacketDirection dir, Packet11PlayerPosition packet) {
-        LogUtils.logCoordsBlockXYZ(line, (int) packet.xPosition, (int) packet.yPosition, (int) packet.zPosition);
+        logCoordsBlockXYZ(line, (int) packet.xPosition, (int) packet.yPosition, (int) packet.zPosition);
         line.append(" onground=").append(packet.onGround);
         line.append(" stance=").append(String.format("%.1f", packet.stance));
     }
@@ -203,7 +203,7 @@ public class PacketLoggers {
     public void logPacketPlayerLook(StringBuilder line, PacketDirection dir, Packet12PlayerLook packet) {
         line.append("onground=").append(packet.onGround);
         line.append(" yawpitch=");
-        LogUtils.logAngleFloat(line, packet.yaw, packet.pitch);
+        logAngleFloat(line, packet.yaw, packet.pitch);
     }
 
     @PacketLogger(id=13, hex=0x0D)
@@ -216,16 +216,16 @@ public class PacketLoggers {
             realY = realStance;
             realStance = tmp;
         }
-        LogUtils.logCoordsBlockXYZ(line, (int) packet.xPosition, (int) realY, (int) packet.zPosition);
+        logCoordsBlockXYZ(line, (int) packet.xPosition, (int) realY, (int) packet.zPosition);
         line.append(" onground=").append(packet.onGround);
         line.append(" stance=").append(String.format("%.1f", realStance));
         line.append(" yawpitch=");
-        LogUtils.logAngleFloat(line, packet.yaw, packet.pitch);
+        logAngleFloat(line, packet.yaw, packet.pitch);
     }
 
     @PacketLogger(id=14, hex=0x0E)
     public void logPacketBlockDig(StringBuilder line, PacketDirection dir, Packet14BlockDig packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" status=");
         CodeTable.blockDigStatus.log(line, packet.status);
         line.append(" face=");
@@ -234,11 +234,11 @@ public class PacketLoggers {
 
     @PacketLogger(id=15, hex=0x0F)
     public void logPacketPlace(StringBuilder line, PacketDirection dir, Packet15Place packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.getXPosition(), packet.getYPosition(), packet.getZPosition());
+        logCoordsBlockXYZ(line, packet.getXPosition(), packet.getYPosition(), packet.getZPosition());
         line.append(" direction=");
         CodeTable.facing3D.log(line, packet.getDirection());
         line.append(" helditem=");
-        LogUtils.logItemStack(line, packet.getItemStack());
+        logItemStack(line, packet.getItemStack());
         line.append(" cursorx=").append(String.format("%.1f", packet.getXOffset()));
         line.append(" cursory=").append(String.format("%.1f", packet.getYOffset()));
         line.append(" cursorz=").append(String.format("%.1f", packet.getZOffset()));
@@ -251,62 +251,62 @@ public class PacketLoggers {
 
     @PacketLogger(id=17, hex=0x11)
     public void logPacketSleep(StringBuilder line, PacketDirection dir, Packet17Sleep packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.bedX, packet.bedY, packet.bedZ);
+        logCoordsBlockXYZ(line, packet.bedX, packet.bedY, packet.bedZ);
         line.append(" unused=").append(packet.field_73622_e); // always 0
         line.append(" entity=");
-        LogUtils.logExistingEntity(line, packet.entityID);
+        logExistingEntity(line, packet.entityID);
     }
 
     @PacketLogger(id=18, hex=0x12)
     public void logPacketAnimation(StringBuilder line, PacketDirection dir, Packet18Animation packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" animation=");
         CodeTable.entityAnimation.log(line, packet.animate);
     }
 
     @PacketLogger(id=19, hex=0x13)
     public void logPacketEntityAction(StringBuilder line, PacketDirection dir, Packet19EntityAction packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" action=");
         CodeTable.entityAction.log(line, packet.state);
     }
 
     @PacketLogger(id=20, hex=0x14)
     public void logPacketNamedEntitySpawn(StringBuilder line, PacketDirection dir, Packet20NamedEntitySpawn packet) {
-        LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" eid=").append(packet.entityId);
         line.append(" name=");
-        LogUtils.logString(line, packet.name);
+        logString(line, packet.name);
         line.append(" yawpitch=");
-        LogUtils.logAngleByte(line, packet.rotation, packet.pitch);
+        logAngleByte(line, packet.rotation, packet.pitch);
         line.append(" helditem=");
-        LogUtils.logItemType(line, packet.currentItem);
+        logItemType(line, packet.currentItem);
         line.append(" metadata=");
-        LogUtils.logEntityMetadata(line, packet.func_73509_c());
+        logEntityMetadata(line, packet.func_73509_c());
     }
 
     @PacketLogger(id=21, hex=0x15)
     public void logPacketPickupSpawn(StringBuilder line, PacketDirection dir, Packet21PickupSpawn packet) {
-        LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" eid=").append(packet.entityId);
         line.append(" item=");
-        LogUtils.logItemStack(line, packet.itemID);
+        logItemStack(line, packet.itemID);
         line.append(" yawpitch=");
-        LogUtils.logAngleByte(line, packet.rotation, packet.pitch);
+        logAngleByte(line, packet.rotation, packet.pitch);
         line.append(" roll=");
-        LogUtils.logAngleByte(line, packet.roll);
+        logAngleByte(line, packet.roll);
     }
 
     @PacketLogger(id=22, hex=0x16)
     public void logPacketCollect(StringBuilder line, PacketDirection dir, Packet22Collect packet) {
-        LogUtils.logExistingEntity(line, packet.collectedEntityId);
+        logExistingEntity(line, packet.collectedEntityId);
         line.append(" collectedby=");
-        LogUtils.logExistingEntity(line, packet.collectorEntityId);
+        logExistingEntity(line, packet.collectorEntityId);
     }
 
     @PacketLogger(id=23, hex=0x17)
     public void logPacketVehicleSpawn(StringBuilder line, PacketDirection dir, Packet23VehicleSpawn packet) {
-        LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" eid=").append(packet.entityId);
         line.append(" type=");
         CodeTable.entitySpawnObject.log(line, packet.type);
@@ -314,7 +314,7 @@ public class PacketLoggers {
         if (packet.throwerEntityId <= 0) {
             line.append(packet.throwerEntityId);
         } else {
-            LogUtils.logExistingEntity(line, packet.throwerEntityId);
+            logExistingEntity(line, packet.throwerEntityId);
             line.append(" speedx=").append(packet.speedX);
             line.append(" speedy=").append(packet.speedY);
             line.append(" speedz=").append(packet.speedZ);
@@ -323,23 +323,23 @@ public class PacketLoggers {
 
     @PacketLogger(id=24, hex=0x18)
     public void logPacketMobSpawn(StringBuilder line, PacketDirection dir, Packet24MobSpawn packet) {
-        LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" eid=").append(packet.entityId);
         line.append(" type=");
-        LogUtils.logEntityType(line, packet.type);
+        logEntityType(line, packet.type);
         line.append(" yawpitch=");
-        LogUtils.logAngleByte(line, packet.yaw, packet.pitch);
+        logAngleByte(line, packet.yaw, packet.pitch);
         line.append(" headyaw=");
-        LogUtils.logAngleByte(line, packet.headYaw);
+        logAngleByte(line, packet.headYaw);
         line.append(" velocity=");
-        LogUtils.logVelocityShort(line, packet.velocityX, packet.velocityY, packet.velocityZ);
+        logVelocityShort(line, packet.velocityX, packet.velocityY, packet.velocityZ);
         line.append(" metadata=");
-        LogUtils.logEntityMetadata(line, packet.getMetadata());
+        logEntityMetadata(line, packet.getMetadata());
     }
 
     @PacketLogger(id=25, hex=0x19)
     public void logPacketEntityPainting(StringBuilder line, PacketDirection dir, Packet25EntityPainting packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" eid=").append(packet.entityId);
         line.append(" dir=");
         CodeTable.facing2D.log(line, packet.direction);
@@ -348,16 +348,16 @@ public class PacketLoggers {
 
     @PacketLogger(id=26, hex=0x1A)
     public void logPacketEntityExpOrb(StringBuilder line, PacketDirection dir, Packet26EntityExpOrb packet) {
-        LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.posX, packet.posY, packet.posZ);
+        logCoordsAbsoluteIntegerXYZ(line, packet.posX, packet.posY, packet.posZ);
         line.append(" eid=").append(packet.entityId);
         line.append(" expvalue=").append(packet.xpValue);
     }
 
     @PacketLogger(id=28, hex=0x1C)
     public void logPacketEntityVelocity(StringBuilder line, PacketDirection dir, Packet28EntityVelocity packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" velocity=");
-        LogUtils.logVelocityShort(line, packet.motionX, packet.motionY, packet.motionZ);
+        logVelocityShort(line, packet.motionX, packet.motionY, packet.motionZ);
     }
 
     @PacketLogger(id=29, hex=0x1D)
@@ -368,79 +368,79 @@ public class PacketLoggers {
             if (i > 0) {
                 line.append(", ");
             }
-            LogUtils.logExistingEntity(line, packet.entityId[i]);
+            logExistingEntity(line, packet.entityId[i]);
         }
         line.append(']');
     }
 
     @PacketLogger(id=30, hex=0x1E)
     public void logPacketEntity(StringBuilder line, PacketDirection dir, Packet30Entity packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
     }
 
     @PacketLogger(id=31, hex=0x1F)
     public void logPacketRelEntityMove(StringBuilder line, PacketDirection dir, Packet31RelEntityMove packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" relmove=");
-        LogUtils.logRelativeMove(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logRelativeMove(line, packet.xPosition, packet.yPosition, packet.zPosition);
     }
 
     @PacketLogger(id=32, hex=0x20)
     public void logPacketEntityLook(StringBuilder line, PacketDirection dir, Packet32EntityLook packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" yawpitch=");
-        LogUtils.logAngleByte(line, packet.yaw, packet.pitch);
+        logAngleByte(line, packet.yaw, packet.pitch);
     }
 
     @PacketLogger(id=33, hex=0x21)
     public void logPacketRelEntityMoveLook(StringBuilder line, PacketDirection dir, Packet33RelEntityMoveLook packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" relmove=");
-        LogUtils.logRelativeMove(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logRelativeMove(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" yawpitch=");
-        LogUtils.logAngleByte(line, packet.yaw, packet.pitch);
+        logAngleByte(line, packet.yaw, packet.pitch);
     }
 
     @PacketLogger(id=34, hex=0x22)
     public void logPacketEntityTeleport(StringBuilder line, PacketDirection dir, Packet34EntityTeleport packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" teleport=");
-        LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" yawpitch=");
-        LogUtils.logAngleByte(line, packet.yaw, packet.pitch);
+        logAngleByte(line, packet.yaw, packet.pitch);
     }
 
     @PacketLogger(id=35, hex=0x23)
     public void logPacketEntityHeadRotation(StringBuilder line, PacketDirection dir, Packet35EntityHeadRotation packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" headyaw=");
-        LogUtils.logAngleByte(line, packet.headRotationYaw);
+        logAngleByte(line, packet.headRotationYaw);
     }
 
     @PacketLogger(id=38, hex=0x26)
     public void logPacketEntityStatus(StringBuilder line, PacketDirection dir, Packet38EntityStatus packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" status=");
         CodeTable.entityStatus.log(line, packet.entityStatus);
     }
 
     @PacketLogger(id=39, hex=0x27)
     public void logPacketAttachEntity(StringBuilder line, PacketDirection dir, Packet39AttachEntity packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" vehicle=");
-        LogUtils.logExistingEntity(line, packet.vehicleEntityId);
+        logExistingEntity(line, packet.vehicleEntityId);
     }
 
     @PacketLogger(id=40, hex=0x28)
     public void logPacketEntityMetadata(StringBuilder line, PacketDirection dir, Packet40EntityMetadata packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" metadata=");
-        LogUtils.logEntityMetadata(line, packet.getMetadata());
+        logEntityMetadata(line, packet.getMetadata());
     }
 
     @PacketLogger(id=41, hex=0x29)
     public void logPacketEntityEffect(StringBuilder line, PacketDirection dir, Packet41EntityEffect packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" effectid=").append(packet.effectId);
         line.append(" amplifier=").append(packet.effectAmplifier);
         line.append(" duration=").append(packet.duration);
@@ -448,7 +448,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=42, hex=0x2A)
     public void logPacketRemoveEntityEffect(StringBuilder line, PacketDirection dir, Packet42RemoveEntityEffect packet) {
-        LogUtils.logExistingEntity(line, packet.entityId);
+        logExistingEntity(line, packet.entityId);
         line.append(" effectid=").append(packet.effectId);
     }
 
@@ -461,7 +461,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=51, hex=0x33)
     public void logPacketMapChunk(StringBuilder line, PacketDirection dir, Packet51MapChunk packet) {
-        LogUtils.logCoordsChunkXZ(line, packet.xCh, packet.zCh);
+        logCoordsChunkXZ(line, packet.xCh, packet.zCh);
         // these MCP-specified field names are incorrect as of 1.3.1, which drastically changed packet 51.
         line.append(" continuous=").append(packet.includeInitialize);
         line.append(" sections=0x").append(Integer.toHexString(packet.yChMin));
@@ -472,13 +472,13 @@ public class PacketLoggers {
         if (LogManager.options.SUMMARIZE_BINARY_DATA) {
             line.append(packet.func_73593_d().length).append(" bytes");
         } else {
-            LogUtils.logByteArrayHexDump(line, packet.func_73593_d());
+            logByteArrayHexDump(line, packet.func_73593_d());
         }
     }
 
     @PacketLogger(id=52, hex=0x34)
     public void logPacketMultiBlockChange(StringBuilder line, PacketDirection dir, Packet52MultiBlockChange packet) {
-        LogUtils.logCoordsChunkXZ(line, packet.xPosition, packet.zPosition);
+        logCoordsChunkXZ(line, packet.xPosition, packet.zPosition);
         line.append(" numblocks=").append(packet.size);
         line.append(" blocks=[");
         // the following code is adapted from NetClientHandler
@@ -513,7 +513,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=53, hex=0x35)
     public void logPacketBlockChange(StringBuilder line, PacketDirection dir, Packet53BlockChange packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" block=");
         line.append(packet.type);
         line.append('d');
@@ -522,7 +522,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=54, hex=0x36)
     public void logPacketPlayNoteBlock(StringBuilder line, PacketDirection dir, Packet54PlayNoteBlock packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.xLocation, packet.yLocation, packet.zLocation);
+        logCoordsBlockXYZ(line, packet.xLocation, packet.yLocation, packet.zLocation);
         // @see http://mc.kev009.com/Block_Actions
         line.append(" blockactionid=").append(packet.instrumentType);
         line.append(" blockactionparam=").append(packet.pitch);
@@ -531,9 +531,9 @@ public class PacketLoggers {
 
     @PacketLogger(id=55, hex=0x37)
     public void logPacketBlockDestroy(StringBuilder line, PacketDirection dir, Packet55BlockDestroy packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.getPosX(), packet.getPosY(), packet.getPosZ());
+        logCoordsBlockXYZ(line, packet.getPosX(), packet.getPosY(), packet.getPosZ());
         line.append(" destroyer=");
-        LogUtils.logExistingEntity(line, packet.getEntityId());
+        logExistingEntity(line, packet.getEntityId());
         line.append(" stage=").append(packet.getDestroyedStage());
     }
 
@@ -549,14 +549,14 @@ public class PacketLoggers {
                 line.append(", ");
             }
             line.append("{pos=");
-            LogUtils.logCoordsChunkXZ(line, packet.func_73582_a(i), packet.func_73580_b(i));
+            logCoordsChunkXZ(line, packet.func_73582_a(i), packet.func_73580_b(i));
             line.append(" sections=0x").append(Integer.toHexString(packet.field_73590_a[i]));
             line.append(" addsections=0x").append(Integer.toHexString(packet.field_73588_b[i]));
             line.append(" chunkdata=");
             if (LogManager.options.SUMMARIZE_BINARY_DATA) {
                 line.append(packet.func_73583_c(i).length).append(" bytes");
             } else {
-                LogUtils.logByteArrayHexDump(line, packet.func_73583_c(i));
+                logByteArrayHexDump(line, packet.func_73583_c(i));
             }
             line.append('}');
         }
@@ -565,7 +565,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=60, hex=0x3C)
     public void logPacketExplosion(StringBuilder line, PacketDirection dir, Packet60Explosion packet) {
-        LogUtils.logCoordsBlockXYZ(line, (int) packet.explosionX, (int) packet.explosionY, (int) packet.explosionZ);
+        logCoordsBlockXYZ(line, (int) packet.explosionX, (int) packet.explosionY, (int) packet.explosionZ);
         line.append(" radius=").append(String.format("%.1f", packet.explosionSize));
         line.append(" destroyed=[");
         for (int i = 0; i < packet.chunkPositionRecords.size(); i++) {
@@ -580,12 +580,12 @@ public class PacketLoggers {
         }
         line.append(']');
         line.append(" knockback=");
-        LogUtils.logVelocityFloat(line, packet.func_73607_d(), packet.func_73609_f(), packet.func_73608_g());
+        logVelocityFloat(line, packet.func_73607_d(), packet.func_73609_f(), packet.func_73608_g());
     }
 
     @PacketLogger(id=61, hex=0x3D)
     public void logPacketDoorChange(StringBuilder line, PacketDirection dir, Packet61DoorChange packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.posX, packet.posY, packet.posZ);
+        logCoordsBlockXYZ(line, packet.posX, packet.posY, packet.posZ);
         line.append(" effect=");
         CodeTable.soundOrParticleEffect.log(line, packet.sfxID);
         line.append(" extradata=").append(packet.auxData);
@@ -593,7 +593,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=62, hex=0x3E)
     public void logPacketLevelSound(StringBuilder line, PacketDirection dir, Packet62LevelSound packet) {
-        LogUtils.logCoordsBlockXYZ(line,
+        logCoordsBlockXYZ(line,
                 (int) packet.getEffectX(),
                 (int) packet.getEffectY(),
                 (int) packet.getEffectZ());
@@ -613,7 +613,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=71, hex=0x47)
     public void logPacketWeather(StringBuilder line, PacketDirection dir, Packet71Weather packet) {
-        LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.posX, packet.posY, packet.posZ);
+        logCoordsAbsoluteIntegerXYZ(line, packet.posX, packet.posY, packet.posZ);
         line.append(" eid=").append(packet.entityID);
         line.append(" islightningbolt=").append(packet.isLightningBolt); // always true
     }
@@ -623,7 +623,7 @@ public class PacketLoggers {
         line.append("windowid=").append(packet.windowId);
         line.append(" inventorytype=").append(packet.inventoryType);
         line.append(" windowtitle=");
-        LogUtils.logString(line, packet.windowTitle);
+        logString(line, packet.windowTitle);
         line.append(" numslots=").append(packet.slotsCount);
     }
 
@@ -640,7 +640,7 @@ public class PacketLoggers {
         line.append(" actionid=").append(packet.action);
         line.append(" shift=").append(packet.holdingShift);
         line.append(" clickeditem=");
-        LogUtils.logItemStack(line, packet.itemStack);
+        logItemStack(line, packet.itemStack);
     }
 
     @PacketLogger(id=103, hex=0x67)
@@ -648,7 +648,7 @@ public class PacketLoggers {
         line.append("windowid=").append(packet.windowId);
         line.append(" slot=").append(packet.itemSlot);
         line.append(" setitem=");
-        LogUtils.logItemStack(line, packet.myItemStack);
+        logItemStack(line, packet.myItemStack);
     }
 
     @PacketLogger(id=104, hex=0x68)
@@ -660,7 +660,7 @@ public class PacketLoggers {
             if (i > 0) {
                 line.append(", ");
             }
-            LogUtils.logItemStack(line, packet.itemStack[i]);
+            logItemStack(line, packet.itemStack[i]);
         }
         line.append(']');
     }
@@ -683,7 +683,7 @@ public class PacketLoggers {
     public void logPacketCreativeSetSlot(StringBuilder line, PacketDirection dir, Packet107CreativeSetSlot packet) {
         line.append("slot=").append(packet.slot);
         line.append(" item=");
-        LogUtils.logItemStack(line, packet.itemStack);
+        logItemStack(line, packet.itemStack);
     }
 
     @PacketLogger(id=108, hex=0x6C)
@@ -694,32 +694,32 @@ public class PacketLoggers {
 
     @PacketLogger(id=130, hex=0x82)
     public void logPacketUpdateSign(StringBuilder line, PacketDirection dir, Packet130UpdateSign packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(' ');
         for (String signLine : packet.signLines) {
-            LogUtils.logString(line, signLine);
+            logString(line, signLine);
         }
     }
 
     @PacketLogger(id=131, hex=0x83)
     public void logPacketMapData(StringBuilder line, PacketDirection dir, Packet131MapData packet) {
         line.append("item=");
-        LogUtils.logItemType(line, packet.itemID);
+        logItemType(line, packet.itemID);
         line.append(" uniqueid=").append(packet.uniqueID); // stored as item damage
         line.append(" data=");
         if (LogManager.options.SUMMARIZE_BINARY_DATA) {
             line.append(packet.itemData.length).append(" bytes");
         } else {
-            LogUtils.logByteArrayHexDump(line, packet.itemData);
+            logByteArrayHexDump(line, packet.itemData);
         }
     }
 
     @PacketLogger(id=132, hex=0x84)
     public void logPacketTileEntityData(StringBuilder line, PacketDirection dir, Packet132TileEntityData packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
+        logCoordsBlockXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" action=").append(packet.actionType);
         line.append(" data=");
-        LogUtils.logNBTTagCompound(line, packet.customParam1);
+        logNBTTagCompound(line, packet.customParam1);
         if (packet.actionType == 1) {
             line.append(" spawnertype=");
             line.append(packet.customParam1.getString("EntityId"));
@@ -735,7 +735,7 @@ public class PacketLoggers {
     @PacketLogger(id=201, hex=0xC9)
     public void logPacketPlayerInfo(StringBuilder line, PacketDirection dir, Packet201PlayerInfo packet) {
         line.append("username=");
-        LogUtils.logString(line, packet.playerName);
+        logString(line, packet.playerName);
         line.append(" online=").append(packet.isConnected);
         line.append(" ping=").append(packet.ping);
     }
@@ -753,13 +753,13 @@ public class PacketLoggers {
 
     @PacketLogger(id=203, hex=0xCB)
     public void logPacketAutoComplete(StringBuilder line, PacketDirection dir, Packet203AutoComplete packet) {
-        LogUtils.logString(line, packet.getText());
+        logString(line, packet.getText());
     }
 
     @PacketLogger(id=204, hex=0xCC)
     public void logPacketClientInfo(StringBuilder line, PacketDirection dir, Packet204ClientInfo packet) {
         line.append("locale=");
-        LogUtils.logString(line, packet.getLanguage());
+        logString(line, packet.getLanguage());
         line.append(" viewdistance=");
         CodeTable.viewDistance.log(line, packet.getRenderDistance());
         line.append(" chat=");
@@ -777,31 +777,31 @@ public class PacketLoggers {
     @PacketLogger(id=250, hex=0xFA)
     public void logPacketCustomPayload(StringBuilder line, PacketDirection dir, Packet250CustomPayload packet) {
         line.append("channel=");
-        LogUtils.logString(line, packet.channel);
+        logString(line, packet.channel);
         line.append(" length=").append(packet.data.length);
         line.append(" data=");
-        LogUtils.logByteArrayAsString(line, packet.data);
+        logByteArrayAsString(line, packet.data);
         line.append(" hexdata=");
-        LogUtils.logByteArrayHexDump(line, packet.data);
+        logByteArrayHexDump(line, packet.data);
     }
 
     @PacketLogger(id=252, hex=0xFC)
     public void logPacketSharedKey(StringBuilder line, PacketDirection dir, Packet252SharedKey packet) {
         // This packet's data fields are private, obfuscated, and lack accessors... reflection time
         line.append("sharedsecret=");
-        LogUtils.logByteArrayHexDump(line, (byte[]) Util.getFieldByType(packet, byte[].class, 0));
+        logByteArrayHexDump(line, (byte[]) Util.getFieldByType(packet, byte[].class, 0));
         line.append(" verifytoken=");
-        LogUtils.logByteArrayHexDump(line, (byte[]) Util.getFieldByType(packet, byte[].class, 1));
+        logByteArrayHexDump(line, (byte[]) Util.getFieldByType(packet, byte[].class, 1));
     }
 
     @PacketLogger(id=253, hex=0xFD)
     public void logPacketServerAuthData(StringBuilder line, PacketDirection dir, Packet253ServerAuthData packet) {
         line.append("serverid=");
-        LogUtils.logString(line, packet.getServerId());
+        logString(line, packet.getServerId());
         line.append(" publickey=");
         line.append(packet.getPublicKey().toString());
         line.append(" verifytoken=");
-        LogUtils.logByteArrayHexDump(line, packet.getVerifyToken());
+        logByteArrayHexDump(line, packet.getVerifyToken());
     }
 
     @PacketLogger(id=254, hex=0xFE)
@@ -811,6 +811,6 @@ public class PacketLoggers {
 
     @PacketLogger(id=255, hex=0xFF)
     public void logPacketKickDisconnect(StringBuilder line, PacketDirection dir, Packet255KickDisconnect packet) {
-        LogUtils.logString(line, packet.reason);
+        logString(line, packet.reason);
     }
 }

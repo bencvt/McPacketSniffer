@@ -71,9 +71,9 @@ public class StatRecorder {
             writer.printf("Packet stats over %.3f seconds", (double)interval / 1000.0);
             writer.println();
             writer.print("from ");
-            writer.println(LogUtils.timestampToString(startTimestamp));
+            writer.println(PacketLoggersBase.timestampToString(startTimestamp));
             writer.print("  to ");
-            writer.println(LogUtils.timestampToString(now));
+            writer.println(PacketLoggersBase.timestampToString(now));
             writer.print("Server: ");
             writer.println(connectionAddress);
             synchronized (packetCountsLock) {

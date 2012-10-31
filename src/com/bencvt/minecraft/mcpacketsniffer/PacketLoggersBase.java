@@ -21,7 +21,7 @@ import net.minecraft.src.WorldType;
 /**
  * Various helper methods for converting stuff to strings.
  */
-public abstract class LogUtils {
+public abstract class PacketLoggersBase {
     /**
      * Get the packet's self-reported payload size. This is known to be inaccurate for some packets,
      * e.g. Packet202PlayerAbilities and anything with metadata.

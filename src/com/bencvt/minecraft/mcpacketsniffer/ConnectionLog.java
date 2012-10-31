@@ -36,7 +36,7 @@ public class ConnectionLog {
         }
         long now = System.currentTimeMillis();
 
-        String connectionAddress = LogUtils.connectionAddressToString(connection);
+        String connectionAddress = PacketLoggersBase.connectionAddressToString(connection);
         LogManager.eventLog.info("starting log for " + connectionAddress);
 
         // determine log file name
@@ -44,7 +44,7 @@ public class ConnectionLog {
         String suffix = "";
         if (LogManager.options.NEW_FILE_PER_CONNECTION) {
             // e.g., "_20120518_133948_mc.example.com"
-            suffix = "_" + LogUtils.timestampToString(now)
+            suffix = "_" + PacketLoggersBase.timestampToString(now)
                     .replace(' ', '_').replaceAll("[:\\-]", "").substring(0, 15);
             suffix += "_" + connectionAddress;
             // use a subdirectory
@@ -81,7 +81,7 @@ public class ConnectionLog {
         }
 
         StringBuilder line = new StringBuilder();
-        LogUtils.logTimestamp(line, System.currentTimeMillis());
+        PacketLoggersBase.logTimestamp(line, System.currentTimeMillis());
         line.append(" new connection to ").append(connectionAddress);
         logWriter.println(line.toString());
         logWriter.flush();
@@ -159,7 +159,7 @@ public class ConnectionLog {
 
     private void logPacket(StringBuilder line, PacketDirection dir, Packet packet) {
         // start off the line with timestamp, direction, packet id, and packet name
-        LogUtils.logTimestamp(line, System.currentTimeMillis());
+        PacketLoggersBase.logTimestamp(line, System.currentTimeMillis());
         line.append(' ').append(dir);
         line.append(" 0x").append(String.format("%02X", packet.getPacketId()));
         String packetName = PacketInfo.getPacketShortName(packet.getPacketId());
