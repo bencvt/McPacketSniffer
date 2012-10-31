@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MemoryConnection implements NetworkManager
+public class MemoryConnection implements INetworkManager
 {
     private static final SocketAddress mySocketAddress = new InetSocketAddress("127.0.0.1", 0);
     private final List readPacketCache = Collections.synchronizedList(new ArrayList());
@@ -37,6 +37,9 @@ public class MemoryConnection implements NetworkManager
         // ==== End modified code
     }
 
+    /**
+     * Sets the NetHandler for this NetworkManager. Server-only.
+     */
     public void setNetHandler(NetHandler par1NetHandler)
     {
         this.myNetHandler = par1NetHandler;
@@ -164,6 +167,8 @@ public class MemoryConnection implements NetworkManager
      */
     public void processOrCachePacket(Packet par1Packet)
     {
+        String var2 = this.myNetHandler.isServerHandler() ? ">" : "<";
+
         if (par1Packet.isWritePacket() && this.myNetHandler.canProcessPackets())
         {
             // ==== Begin modified code

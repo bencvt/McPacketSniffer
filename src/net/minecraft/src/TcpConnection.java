@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.crypto.SecretKey;
 
-public class TcpConnection implements NetworkManager
+public class TcpConnection implements INetworkManager
 {
     public static AtomicInteger field_74471_a = new AtomicInteger();
     public static AtomicInteger field_74469_b = new AtomicInteger();
@@ -146,6 +146,9 @@ public class TcpConnection implements NetworkManager
         this.readThread = null;
     }
 
+    /**
+     * Sets the NetHandler for this NetworkManager. Server-only.
+     */
     public void setNetHandler(NetHandler par1NetHandler)
     {
         this.theNetHandler = par1NetHandler;
@@ -325,7 +328,7 @@ public class TcpConnection implements NetworkManager
 
         try
         {
-            Packet var2 = Packet.readPacket(this.socketInputStream, this.theNetHandler.isServerHandler());
+            Packet var2 = Packet.readPacket(this.socketInputStream, this.theNetHandler.isServerHandler(), this.networkSocket);
 
             if (var2 != null)
             {

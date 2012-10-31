@@ -18,5 +18,5 @@ echo "== Reobfuscating =="
 
 echo "== Packaging $JAR =="
 cd reobf/minecraft/
-cp src/minecraft/com/bencvt/minecraft/mcpacketsniffer/*.properties com/bencvt/minecraft/mcpacketsniffer/
+cp -v ../../src/minecraft/com/bencvt/minecraft/mcpacketsniffer/*.properties com/bencvt/minecraft/mcpacketsniffer/
 jar cfv $JAR ./

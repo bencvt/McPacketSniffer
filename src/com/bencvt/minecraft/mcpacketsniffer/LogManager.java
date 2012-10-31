@@ -5,11 +5,11 @@ import java.util.logging.Logger;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.MemoryConnection;
-import net.minecraft.src.NetworkManager;
+import net.minecraft.src.INetworkManager;
 import net.minecraft.src.Packet;
 import net.minecraft.src.PacketHooks;
 import net.minecraft.src.PacketHooks.ClientPacketEventListener;
-import bencvt.minecraft.client.mcpacketsniffer.Util.FileLogger;
+import com.bencvt.minecraft.mcpacketsniffer.Util.FileLogger;
 
 /**
  * Controller class that sets up the environment and creates ConnectionLog instances
@@ -52,7 +52,7 @@ public class LogManager implements ClientPacketEventListener {
     }
 
     @Override
-    public void onNewConnection(NetworkManager connection) {
+    public void onNewConnection(INetworkManager connection) {
         if (activeConnectionLog != null) {
             activeConnectionLog.stop();
             activeConnectionLog = null;
@@ -64,7 +64,7 @@ public class LogManager implements ClientPacketEventListener {
     }
 
     @Override
-    public void onPacket(NetworkManager connection, Packet packet, boolean send, boolean highPriority) {
+    public void onPacket(INetworkManager connection, Packet packet, boolean send, boolean highPriority) {
         if (activeConnectionLog != null) {
             activeConnectionLog.onPacket(send ? PacketDirection.C2S : PacketDirection.S2C, packet);
         }

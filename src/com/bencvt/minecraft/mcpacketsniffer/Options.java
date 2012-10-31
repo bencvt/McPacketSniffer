@@ -49,7 +49,7 @@ public class Options {
     }
 
     private void copyDefaults(File optionsFile) {
-        Util.copyResourceToFile("/bencvt/minecraft/client/mcpacketsniffer/default-options.properties", optionsFile);
+        Util.copyResourceToFile("/com/bencvt/minecraft/mcpacketsniffer/default-options.properties", optionsFile);
         LogManager.eventLog.info("Restored " + optionsFile);
     }
 

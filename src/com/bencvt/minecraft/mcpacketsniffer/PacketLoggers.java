@@ -151,7 +151,7 @@ public class PacketLoggers {
         LogUtils.logExistingEntity(line, packet.entityID);
         line.append(" slot=").append(packet.slot);
         line.append(" item=");
-        LogUtils.logItemStack(line, packet.func_73397_d());
+        LogUtils.logItemStack(line, packet.getItemSlot());
     }
 
     @PacketLogger(id=6, hex=0x06)
@@ -290,9 +290,7 @@ public class PacketLoggers {
         LogUtils.logCoordsAbsoluteIntegerXYZ(line, packet.xPosition, packet.yPosition, packet.zPosition);
         line.append(" eid=").append(packet.entityId);
         line.append(" item=");
-        LogUtils.logItemType(line, packet.itemID);
-        line.append(" count=").append(packet.count);
-        line.append(" damage=").append(packet.itemDamage);
+        LogUtils.logItemStack(line, packet.itemID);
         line.append(" yawpitch=");
         LogUtils.logAngleByte(line, packet.rotation, packet.pitch);
         line.append(" roll=");
@@ -533,10 +531,10 @@ public class PacketLoggers {
 
     @PacketLogger(id=55, hex=0x37)
     public void logPacketBlockDestroy(StringBuilder line, PacketDirection dir, Packet55BlockDestroy packet) {
-        LogUtils.logCoordsBlockXYZ(line, packet.func_73321_f(), packet.func_73324_g(), packet.func_73320_h());
+        LogUtils.logCoordsBlockXYZ(line, packet.getPosX(), packet.getPosY(), packet.getPosZ());
         line.append(" destroyer=");
-        LogUtils.logExistingEntity(line, packet.func_73322_d());
-        line.append(" stage=").append(packet.func_73323_i());
+        LogUtils.logExistingEntity(line, packet.getEntityId());
+        line.append(" stage=").append(packet.getDestroyedStage());
     }
 
     @PacketLogger(id=56, hex=0x38)
@@ -570,11 +568,11 @@ public class PacketLoggers {
         LogUtils.logCoordsBlockXYZ(line, (int) packet.explosionX, (int) packet.explosionY, (int) packet.explosionZ);
         line.append(" radius=").append(String.format("%.1f", packet.explosionSize));
         line.append(" destroyed=[");
-        for (int i = 0; i < packet.field_73613_e.size(); i++) {
+        for (int i = 0; i < packet.chunkPositionRecords.size(); i++) {
             if (i > 0) {
                 line.append(", ");
             }
-            ChunkPosition pos = (ChunkPosition) packet.field_73613_e.get(i);
+            ChunkPosition pos = (ChunkPosition) packet.chunkPositionRecords.get(i);
             line.append('(').append(pos.x);
             line.append(',').append(pos.y);
             line.append(',').append(pos.z);
@@ -596,12 +594,12 @@ public class PacketLoggers {
     @PacketLogger(id=62, hex=0x3E)
     public void logPacketLevelSound(StringBuilder line, PacketDirection dir, Packet62LevelSound packet) {
         LogUtils.logCoordsBlockXYZ(line,
-                (int) packet.func_73572_f(),
-                (int) packet.func_73568_g(),
-                (int) packet.func_73569_h());
-        line.append(" soundname=").append(packet.func_73570_d());
-        line.append(" volume=").append(String.format("%.1f", packet.func_73571_i()*100)).append('%');
-        line.append(" pitch=").append(String.format("%.1f", packet.func_73573_j()*100)).append('%');
+                (int) packet.getEffectX(),
+                (int) packet.getEffectY(),
+                (int) packet.getEffectZ());
+        line.append(" soundname=").append(packet.getSoundName());
+        line.append(" volume=").append(String.format("%.1f", packet.getVolume()*100)).append('%');
+        line.append(" pitch=").append(String.format("%.1f", packet.getPitch()*100)).append('%');
     }
 
     @PacketLogger(id=70, hex=0x46)
@@ -745,7 +743,7 @@ public class PacketLoggers {
     @PacketLogger(id=202, hex=0xCA)
     public void logPacketPlayerAbilities(StringBuilder line, PacketDirection dir, Packet202PlayerAbilities packet) {
         line.append("invulnerable=").append(packet.getDisableDamage());
-        line.append(" isflying=").append(packet.getIsFlying());
+        line.append(" isflying=").append(packet.getFlying());
         line.append(" canfly=").append(packet.getAllowFlying());
         line.append(" iscreative=").append(packet.isCreativeMode());
         line.append(" flyspeed=").append(packet.getFlySpeed());
@@ -755,7 +753,7 @@ public class PacketLoggers {
 
     @PacketLogger(id=203, hex=0xCB)
     public void logPacketAutoComplete(StringBuilder line, PacketDirection dir, Packet203AutoComplete packet) {
-        LogUtils.logString(line, packet.func_73473_d());
+        LogUtils.logString(line, packet.getText());
     }
 
     @PacketLogger(id=204, hex=0xCC)

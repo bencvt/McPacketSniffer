@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 
-import net.minecraft.src.NetworkManager;
+import net.minecraft.src.INetworkManager;
 import net.minecraft.src.Packet;
 
 /**
@@ -16,13 +16,13 @@ import net.minecraft.src.Packet;
  * Each ConnectionLog is owned by LogManager.
  */
 public class ConnectionLog {
-    private final NetworkManager connection;
+    private final INetworkManager connection;
     private PrintWriter logWriter;
     private Object logWriterLock = new Object();
     private StatRecorder stats;
     private Thread flusherThread;
 
-    public ConnectionLog(NetworkManager connection) {
+    public ConnectionLog(INetworkManager connection) {
         this.connection = connection;
     }
 

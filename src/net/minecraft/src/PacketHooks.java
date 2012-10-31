@@ -18,14 +18,14 @@ import java.util.LinkedHashSet;
  * @author bencvt
  */
 public class PacketHooks {
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
     public interface ClientPacketEventListener {
         /**
          * This event occurs whenever the client creates a new TcpConnection or
          * MemoryConnection.
          */
-        public void onNewConnection(NetworkManager connection);
+        public void onNewConnection(INetworkManager connection);
 
         /**
          * This event occurs right before Packet.writePacketData() (when sending)
@@ -33,12 +33,15 @@ public class PacketHooks {
          * 
          * @param connection
          * @param packet
-         * @param send true if the client originated this packet, false if the server did
-         * @param highPriority normally packets read from the input stream sit in a queue
-         *     for later processing. However certain packets are processed immediately.
-         *     @see Packet.isWritePacket().
+         * @param send true if the client originated this packet, false if the
+         *             server did
+         * @param highPriority normally packets read from the input stream sit
+         *                     in a queue for later processing. However certain
+         *                     packets (flagged "isWritePacket") are processed
+         *                     immediately.
+         * @see Packet#isWritePacket
          */
-        public void onPacket(NetworkManager connection, Packet packet, boolean send, boolean highPriority);
+        public void onPacket(INetworkManager connection, Packet packet, boolean send, boolean highPriority);
     }
 
     private static LinkedHashSet<ClientPacketEventListener> listeners = new LinkedHashSet<ClientPacketEventListener>();
@@ -83,15 +86,19 @@ public class PacketHooks {
     // Dispatch functions, should only be called from modified vanilla classes
     //
 
-    protected void dispatchNewConnectionEvent(NetworkManager connection) {
+    protected void dispatchNewConnectionEvent(INetworkManager connection) {
         for (ClientPacketEventListener listener : listeners) {
             listener.onNewConnection(connection);
         }
     }
 
-    protected void dispatchPacketEvent(NetworkManager connection, Packet packet, boolean send, boolean highPriority) {
+    protected void dispatchPacketEvent(INetworkManager connection, Packet packet, boolean send, boolean highPriority) {
         for (ClientPacketEventListener listener : listeners) {
             listener.onPacket(connection, packet, send, highPriority);
         }
+    }
+
+    protected PacketHooks() {
+        // do nothing; just marking the constructor as protected
     }
 }

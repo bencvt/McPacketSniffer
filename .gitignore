@@ -1,21 +1,3 @@
-/mcp/*
-!/mcp/build-mcpacketsniffer.*
-!/mcp/src
-/mcp/src/*
-!/mcp/src/minecraft
-/mcp/src/minecraft/*
-!/mcp/src/minecraft/bencvt
-!/mcp/src/minecraft/net
-/mcp/src/minecraft/net/*
-!/mcp/src/minecraft/net/minecraft/
-/mcp/src/minecraft/net/minecraft/*
-!/mcp/src/minecraft/net/minecraft/src
-/mcp/src/minecraft/net/minecraft/src/*
-!/mcp/src/minecraft/net/minecraft/src/MemoryConnection.java
-!/mcp/src/minecraft/net/minecraft/src/PacketHooks.java
-!/mcp/src/minecraft/net/minecraft/src/TcpConnection.java
-!/mcp/src/minecraft/net/minecraft/src/mod_McPacketSniffer.java
-
 # Compiled source #
 ###################
 *.com

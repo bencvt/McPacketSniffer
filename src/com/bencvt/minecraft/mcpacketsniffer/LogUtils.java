@@ -12,7 +12,7 @@ import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.MemoryConnection;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NetworkManager;
+import net.minecraft.src.INetworkManager;
 import net.minecraft.src.Packet;
 import net.minecraft.src.TcpConnection;
 import net.minecraft.src.WatchableObject;
@@ -45,7 +45,7 @@ public abstract class LogUtils {
         return b.toString();
     }
 
-    public static void logConnectionAddress(StringBuilder line, NetworkManager connection) {
+    public static void logConnectionAddress(StringBuilder line, INetworkManager connection) {
         if (connection instanceof MemoryConnection) {
             line.append("singleplayer");
             return;
@@ -62,7 +62,7 @@ public abstract class LogUtils {
         }
     }
 
-    public static String connectionAddressToString(NetworkManager connection) {
+    public static String connectionAddressToString(INetworkManager connection) {
         StringBuilder b = new StringBuilder();
         logConnectionAddress(b, connection);
         return b.toString().replace(' ', '_').replace(':', '_').replaceAll("[^A-Za-z0-9\\-_\\.]+", "");
