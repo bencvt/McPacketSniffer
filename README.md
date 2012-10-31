@@ -3,18 +3,22 @@ received between the client and a Minecraft server. Packets are logged to a text
 file, one packet per line, one file per connection.
 
 Why bother modding the client when you could just use one of dozens of
-[external utilities](http://mc.kev009.com/Utility_List)? Three main reasons:
+[external utilities](http://mc.kev009.com/Utility_List)? Several reasons:
 
-1.  Game state can be readily accessed. For example, instead of just printing an
+1.  Inspecting Minecraft's internal Packet objects rather than sequences of raw
+    bytes is less error-prone. Why reinvent the wheel when you can reuse the
+    original?
+
+2.  Game state can be readily accessed. For example, instead of just printing an
     entity's ID as it's sent in the packet, this mod can look up the entity,
     outputting its type and current coordinates.
 
-2.  As of 1.3 the protocol is [encrypted](http://mc.kev009.com/Protocol_Encryption).
+3.  As of 1.3 the protocol is [encrypted](http://mc.kev009.com/Protocol_Encryption).
     This limits external utilities: they either have to be a full-fledged
     Minecraft protocol proxy or they have to interface with the Minecraft client
     somehow (i.e., read memory) to get at the key.
 
-3.  The memory connection, used by the Minecraft client in single player mode to
+4.  The memory connection, used by the Minecraft client in single player mode to
     talk to the integrated server, uses the protocol too (minus the crypto).
     This internal connection can be inspected using McPacketSniffer as well,
     something you wouldn't be able to do at all using TCP-based utilities.
@@ -37,7 +41,7 @@ is for the birds.
 ## Compatibility
 
 McPacketSniffer modifies `bw.class` (MemoryConnection) and `bx.class`
-(TcpConncection). Any other mod that modifies these classes will potentially be
+(TcpConnection). Any other mod that modifies these classes will potentially be
 incompatible with McPacketSniffer.
 
 Note that Forge *does* modify these classes. However, McPacketSniffer provides a
@@ -71,3 +75,4 @@ Known exceptions:
 
 McPacketSniffer is open source! Visit the official project page at
 [github.com/bencvt/McPacketSniffer](https://github.com/bencvt/McPacketSniffer).
+Build instructions are located in `README-dev.md`.
