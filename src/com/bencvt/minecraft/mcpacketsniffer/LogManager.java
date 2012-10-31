@@ -43,6 +43,7 @@ public class LogManager implements ClientPacketEventListener {
         baseDirectory.mkdirs();
 
         eventLog = new FileLogger(baseDirectory, NAME, true);
+        eventLog.info("new Minecraft session, loaded " + NAME + " v" + VERSION);
 
         options = new Options();
         options.load();
@@ -53,6 +54,7 @@ public class LogManager implements ClientPacketEventListener {
 
     @Override
     public void onNewConnection(INetworkManager connection) {
+        Options.reloadOptionsFileIfModified();
         if (activeConnectionLog != null) {
             activeConnectionLog.stop("replaced"); // shouldn't happen
             activeConnectionLog = null;

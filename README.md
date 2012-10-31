@@ -49,7 +49,8 @@ McPacketSniffer's version of these classes in your final `minecraft.jar`.
 Start Minecraft with this mod installed, which will automatically create
 `(minecraft dir)/mods/McPacketSniffer/options.txt`. You can open this file in a
 text editor to specify exactly what you want to log. Any changes you make will
-take effect within a few seconds; no need to restart Minecraft for most changes.
+take effect within a few seconds; no need to restart Minecraft for most changes,
+though some settings won't take effect until you open a new server connection.
 
 The packet logs are located in `(minecraft dir)/mods/McPacketSniffer/logs`.
 

@@ -20,6 +20,8 @@ public class Options {
     public boolean LOG_MISSING_CODES;
     public boolean STATS_ALL_PACKETS;
 
+    private static long lastModified;
+
     public void load() {
         File optionsFile = getOptionsFile();
         if (!optionsFile.exists()) {
@@ -47,6 +49,7 @@ public class Options {
                 throw new RuntimeException(hardFail);
             }
         }
+        lastModified = optionsFile.lastModified();
     }
 
     private static void copyDefaults(File optionsFile) {
@@ -91,24 +94,26 @@ public class Options {
         new Thread(LogManager.NAME + " options file watcher") {
             @Override
             public void run() {
-                File optionsFile = getOptionsFile();
-                long lastModified = optionsFile.lastModified();
                 while (LogManager.minecraft.running) {
-                    if (optionsFile.lastModified() > lastModified) {
-                        LogManager.eventLog.info("Reloading " + optionsFile +
-                                ". Some changes won't take effect until a new connection is established.");
-                        Options newOptions = new Options();
-                        newOptions.load();
-                        LogManager.options = newOptions;
-                        lastModified = optionsFile.lastModified();
-                    }
                     try {
                         sleep(LogManager.OPTIONS_CHECK_RELOAD_INTERVAL);
                     } catch (InterruptedException e) {
                         return;
                     }
+                    reloadOptionsFileIfModified();
                 }
             }
         }.start();
+    }
+
+    public static synchronized void reloadOptionsFileIfModified() {
+        File optionsFile = getOptionsFile();
+        if (optionsFile.lastModified() > lastModified) {
+            LogManager.eventLog.info("Reloading " + optionsFile +
+                    ". Some changes won't take effect until a new connection is established.");
+            Options newOptions = new Options();
+            newOptions.load();
+            LogManager.options = newOptions;
+        }
     }
 }
