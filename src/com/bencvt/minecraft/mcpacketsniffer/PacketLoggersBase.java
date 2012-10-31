@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import net.minecraft.src.Entity;
 import net.minecraft.src.EntityList;
 import net.minecraft.src.EntityOtherPlayerMP;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EnumGameType;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -36,8 +37,9 @@ public abstract class PacketLoggersBase {
     public static void logTimestamp(StringBuilder line, long timestamp) {
         String ts = new java.sql.Timestamp(timestamp).toString();
         line.append(ts);
-        for (int pad = ts.length(); pad < 23; pad++)
+        for (int pad = ts.length(); pad < 23; pad++) {
             line.append('0');
+        }
     }
     public static String timestampToString(long timestamp) {
         StringBuilder b = new StringBuilder();
@@ -222,16 +224,19 @@ public abstract class PacketLoggersBase {
 
     public static void logItemType(StringBuilder line, int itemId) {
         line.append(itemId);
-        if (itemId == 0)
+        if (itemId == 0) {
             return;
+        }
         line.append('(');
         Item item = null;
-        if (itemId >= 0 && itemId < Item.itemsList.length)
+        if (itemId >= 0 && itemId < Item.itemsList.length) {
             item = Item.itemsList[itemId];
-        if (item == null)
+        }
+        if (item == null) {
             line.append('?');
-        else
+        } else {
             line.append(item.getItemName());
+        }
         line.append(')');
     }
 
@@ -254,10 +259,11 @@ public abstract class PacketLoggersBase {
     public static void logEntityType(StringBuilder line, int entityType) {
         line.append(entityType).append('(');
         String name = EntityList.getStringFromID(entityType);
-        if (name == null)
+        if (name == null) {
             line.append('?');
-        else
+        } else {
             line.append(name);
+        }
         line.append(')');
     }
     public static void logEntityType(StringBuilder line, Entity entity) {
@@ -266,12 +272,15 @@ public abstract class PacketLoggersBase {
             return;
         }
         String name = EntityList.getEntityString(entity);
-        if (name == null && entity instanceof EntityOtherPlayerMP)
+        if (name == null && entity instanceof EntityOtherPlayerMP) {
             line.append("<other player>(").append(((EntityOtherPlayerMP) entity).username).append(')');
-        else if (name == null)
+        } else if (name == null && entity instanceof EntityPlayer) {
+            line.append("<player>(").append(((EntityPlayer) entity).username).append(')');
+        } else if (name == null) {
             line.append("<unlisted>(?)");
-        else
+        } else {
             line.append(EntityList.getEntityID(entity)).append('(').append(name).append(')');
+        }
     }
 
     public static void logExistingEntity(StringBuilder line, int entityId) {

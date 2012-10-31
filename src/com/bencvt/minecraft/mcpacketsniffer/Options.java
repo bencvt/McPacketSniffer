@@ -17,6 +17,7 @@ public class Options {
     public boolean COORDS_INCLUDE_CHUNK;
     public boolean SUMMARIZE_BINARY_DATA;
     public String COLOR_ESCAPE;
+    public boolean LOG_MISSING_CODES;
     public boolean STATS_ALL_PACKETS;
 
     public void load() {
@@ -63,6 +64,7 @@ public class Options {
         COORDS_INCLUDE_CHUNK = Boolean.parseBoolean(properties.getProperty("coords-include-chunk"));
         SUMMARIZE_BINARY_DATA = Boolean.parseBoolean(properties.getProperty("summarize-binary-data"));
         COLOR_ESCAPE = properties.getProperty("color-escape").trim();
+        LOG_MISSING_CODES = Boolean.parseBoolean(properties.getProperty("log-missing-codes"));
         STATS_ALL_PACKETS = Boolean.parseBoolean(properties.getProperty("stats-all-packets"));
     }
 
