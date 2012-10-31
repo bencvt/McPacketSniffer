@@ -1,9 +1,9 @@
-This is a client-side mod for Minecraft that logs packets sent and received
-between the client and a Minecraft server. Packets are logged to a text file,
-one packet per line, one file per connection.
+McPacketSniffer is a client-side mod for Minecraft that logs packets sent and
+received between the client and a Minecraft server. Packets are logged to a text
+file, one packet per line, one file per connection.
 
-Why bother modding the client when you could just use one of dozens of external
-utilities? Three main reasons:
+Why bother modding the client when you could just use one of dozens of
+[external utilities](http://mc.kev009.com/Utility_List)? Three main reasons:
 
 1.  Game state can be readily accessed. For example, instead of just printing an
     entity's ID as it's sent in the packet, this mod can look up the entity,
