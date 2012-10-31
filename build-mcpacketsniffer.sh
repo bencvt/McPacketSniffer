@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-JAR=$PWD/McPacketSniffer-2.0-SNAPSHOT.jar
+JAR=$PWD/McPacketSniffer-3.0-SNAPSHOT.jar
 
 rm $JAR || true
 
@@ -17,6 +17,6 @@ echo "== Reobfuscating =="
 [ "$(ls reobf/minecraft/)" ] || exit 1
 
 echo "== Packaging $JAR =="
-cp src/minecraft/bencvt/minecraft/client/mcpacketsniffer/*.properties reobf/minecraft/bencvt/minecraft/client/mcpacketsniffer/
 cd reobf/minecraft/
+cp src/minecraft/com/bencvt/minecraft/mcpacketsniffer/*.properties com/bencvt/minecraft/mcpacketsniffer/
 jar cfv $JAR ./

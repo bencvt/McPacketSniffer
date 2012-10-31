@@ -1,4 +1,4 @@
-package bencvt.minecraft.client.mcpacketsniffer;
+package com.bencvt.minecraft.mcpacketsniffer;
 
 import java.util.HashMap;
 

@@ -1,6 +1,6 @@
 package net.minecraft.src;
 
-import bencvt.minecraft.client.mcpacketsniffer.LogManager;
+import com.bencvt.minecraft.mcpacketsniffer.LogManager;
 
 public class mod_McPacketSniffer extends BaseMod {
     @Override
