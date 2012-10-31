@@ -48,7 +48,7 @@ public class Options {
         }
     }
 
-    private void copyDefaults(File optionsFile) {
+    private static void copyDefaults(File optionsFile) {
         Util.copyResourceToFile("/com/bencvt/minecraft/mcpacketsniffer/default-options.properties", optionsFile);
         LogManager.eventLog.info("Restored " + optionsFile);
     }
@@ -66,7 +66,7 @@ public class Options {
         STATS_ALL_PACKETS = Boolean.parseBoolean(properties.getProperty("stats-all-packets"));
     }
 
-    private void loadIntegerList(Collection<Integer> list, String items) {
+    private static void loadIntegerList(Collection<Integer> list, String items) {
         list.clear();
         for (String item : items.split(",")) {
             item = item.trim();

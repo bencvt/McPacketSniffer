@@ -8,33 +8,40 @@ import net.minecraft.src.*;
  * Reference class listing all known packet types.
  * @see http://mc.kev009.com/Protocol
  * 
- * The names for the packets in the above page from the Minecraft Coalition wiki are generally
- * more accurate than the class names as deobfuscated by MCP. This isn't MCP's fault: it has a
- * (good!) policy in place that once an identifier has been deobfuscated, it is generally not
- * renamed, because that would break the build for every mod that references that identifier.
+ * The names for the packets in the above page from the Minecraft Coalition
+ * wiki are generally more accurate than the class names as deobfuscated by
+ * MCP. This isn't MCP's fault: it has a (good!) policy in place that once an
+ * identifier has been deobfuscated, it is generally not renamed, because that
+ * would break the build for every mod that references that identifier.
  * 
- * This reference class lists the two names for each packet side-by-side. It also provides a third,
- * shorthand name of each packet suitable for logging, usually based off the Minecraft Coalition
- * version.
+ * This reference class lists the two names for each packet side-by-side. It
+ * also provides a third, shorthand name of each packet suitable for logging,
+ * usually based off the Minecraft Coalition version.
  */
 public class PacketInfo {
-    public static final HashMap<Integer, PacketInfo> ALL_PACKETS = new HashMap();
+    public static final HashMap<Integer, PacketInfo> ALL_PACKETS = new HashMap<Integer, PacketInfo>();
 
-    public int id;
-    public String shortName;
-    public String name;
-    public Class packetClass;
+    public final int id;
+    public final String shortName;
+    public final String name;
+    public final Class<? extends Packet> packetClass;
 
-    public PacketInfo(int id, String shortName, String name, Class packetClass) {
+    public PacketInfo(int id, String shortName, String name, Class<? extends Packet> packetClass) {
         this.id = id;
         this.shortName = shortName;
-        if (shortName.length() > 12)
+        if (shortName.length() > 12) {
             throw new RuntimeException("invalid short name length: " + shortName);
+        }
         this.name = name;
         this.packetClass = packetClass;
-        Class c = (Class) Packet.packetIdToClassMap.lookup(id);
-        if (!packetClass.isAssignableFrom(c)) // not .isEqual(), because some mods (i.e. wecui) insert a proxy subclass
+
+        // Sanity check to make sure the packet ID/class matches Minecraft's
+        // internal packet info map. Use isAssignableFrom instead of isEqual
+        // because some mods proxy certain packet types (e.g., chat).
+        Class<? extends Packet> c = (Class<? extends Packet>) Packet.packetIdToClassMap.lookup(id);
+        if (!packetClass.isAssignableFrom(c)) {
             throw new RuntimeException("packet class mismatch: " + id + ", " + packetClass + ", " + c);
+        }
     }
 
     public static String getPacketShortName(int id) {
@@ -44,9 +51,10 @@ public class PacketInfo {
         return ALL_PACKETS.get(id).shortName;
     }
 
-    private static void add(int id, String shortName, String name, Class packetClass) {
-        if (ALL_PACKETS.containsKey(id))
+    private static void add(int id, String shortName, String name, Class<? extends Packet> packetClass) {
+        if (ALL_PACKETS.containsKey(id)) {
             throw new RuntimeException("duplicate definitions for id " + id);
+        }
         PacketInfo packetInfo = new PacketInfo(id, shortName.trim(), name, packetClass);
         ALL_PACKETS.put(id, packetInfo);
     }

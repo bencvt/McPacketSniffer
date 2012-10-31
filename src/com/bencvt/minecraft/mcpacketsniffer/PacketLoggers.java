@@ -3,6 +3,7 @@ package com.bencvt.minecraft.mcpacketsniffer;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import net.minecraft.src.*;
 

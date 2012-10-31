@@ -35,18 +35,18 @@ public class LogManager implements ClientPacketEventListener {
             throw new IllegalStateException("multiple instances of singleton");
         }
         instance = this;
-        this.minecraft = minecraft;
+        LogManager.minecraft = minecraft;
     }
 
     public void init() {
-        baseDirectory = new File(minecraft.getMinecraftDir(), "mods" + File.separator + NAME);
+        baseDirectory = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + NAME);
         baseDirectory.mkdirs();
 
         eventLog = new FileLogger(baseDirectory, NAME, true);
 
         options = new Options();
         options.load();
-        options.watchFileForReload();
+        Options.watchFileForReload();
 
         PacketHooks.register(this);
     }

@@ -68,7 +68,7 @@ public class StatRecorder {
         long interval = now - startTimestamp;
         try {
             PrintWriter writer = new PrintWriter(statsFile);
-            writer.printf("Packet stats over %.3f seconds", (double)interval / 1000.0);
+            writer.printf("Packet stats over %.3f seconds", interval / 1000.0);
             writer.println();
             writer.print("from ");
             writer.println(PacketLoggersBase.timestampToString(startTimestamp));
@@ -90,7 +90,7 @@ public class StatRecorder {
         }
     }
 
-    private void writeStatsTable(PrintWriter writer, long intervalMillis, long[] packetCounts, long[] byteCounts) {
+    private static void writeStatsTable(PrintWriter writer, long intervalMillis, long[] packetCounts, long[] byteCounts) {
         writer.println("  packet          name     count    approx bytes   average");
         writer.println("-------- ------------- --------- --------------- ---------");
 
@@ -121,7 +121,7 @@ public class StatRecorder {
         double bps = 0.0;
         if (intervalMillis != 0L) {
             // bits per second, not bytes per millisecond
-            bps = (double)byteTotal * 8.0 / ((double)intervalMillis / 1000.0);
+            bps = byteTotal * 8.0 / (intervalMillis / 1000.0);
         }
         // kilo/mega, not kibi/mebi
         writer.printf("Approximate bandwidth: %.2f bps = %.2f kbps = %.2f Mbps",
@@ -129,7 +129,7 @@ public class StatRecorder {
         writer.println();
     }
 
-    private double averagePacketSize(long bytes, long packets) {
+    private static double averagePacketSize(long bytes, long packets) {
         if (packets == 0L) {
             return 0.0;
         }

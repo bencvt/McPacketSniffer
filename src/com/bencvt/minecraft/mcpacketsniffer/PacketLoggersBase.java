@@ -175,12 +175,12 @@ public abstract class PacketLoggersBase {
     }
     public static void logAngleByte(StringBuilder line, byte angle) {
         logAngleFloat(line,
-                (float)angle * 360F / 256F);
+                angle * 360F / 256F);
     }
     public static void logAngleByte(StringBuilder line, byte yaw, byte pitch) {
         logAngleFloat(line,
-                (float)yaw * 360F / 256F,
-                (float)pitch * 360F / 256F);
+                yaw * 360F / 256F,
+                pitch * 360F / 256F);
     }
 
 
@@ -189,14 +189,14 @@ public abstract class PacketLoggersBase {
     }
 
     public static void logVelocityShort(StringBuilder line, int motionX, int motionY, int motionZ) {
-        logVelocityFloat(line, (float) motionX / 8000.0F, (float) motionY / 8000.0F, (float) motionZ / 8000.0F);
+        logVelocityFloat(line, motionX / 8000.0F, motionY / 8000.0F, motionZ / 8000.0F);
     }
 
     public static void logRelativeMove(StringBuilder line, byte absX, byte absY, byte absZ) {
         line.append('(');
-        line.append(String.format("%.3f", (double) absX / 32.0)).append(',');
-        line.append(String.format("%.3f", (double) absY / 32.0)).append(',');
-        line.append(String.format("%.3f", (double) absZ / 32.0)).append(')');
+        line.append(String.format("%.3f", absX / 32.0)).append(',');
+        line.append(String.format("%.3f", absY / 32.0)).append(',');
+        line.append(String.format("%.3f", absZ / 32.0)).append(')');
     }
 
     //

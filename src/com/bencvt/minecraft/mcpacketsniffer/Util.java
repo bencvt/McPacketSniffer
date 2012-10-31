@@ -28,8 +28,9 @@ public abstract class Util {
                 StringWriter w = new StringWriter();
                 String ts = new Timestamp((new Date()).getTime()).toString();
                 w.append(ts);
-                for (int pad = ts.length(); pad < 23; pad++)
+                for (int pad = ts.length(); pad < 23; pad++) {
                     w.append('0');
+                }
                 w.append(" [").append(record.getLevel().getName());
                 w.append("] ").append(formatMessage(record)).append('\n');
                 if (record.getThrown() != null) {
@@ -58,6 +59,7 @@ public abstract class Util {
      * @return the nth field of the specified type declared by obj's class,
      *         or null if there was a reflection error.
      */
+    @SuppressWarnings("rawtypes")
     public static Object getFieldByType(Object obj, Class type, int n) {
         try {
             int index = 0;

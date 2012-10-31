@@ -157,7 +157,7 @@ public class ConnectionLog {
         }
     }
 
-    private void logPacket(StringBuilder line, PacketDirection dir, Packet packet) {
+    private static void logPacket(StringBuilder line, PacketDirection dir, Packet packet) {
         // start off the line with timestamp, direction, packet id, and packet name
         PacketLoggersBase.logTimestamp(line, System.currentTimeMillis());
         line.append(' ').append(dir);
