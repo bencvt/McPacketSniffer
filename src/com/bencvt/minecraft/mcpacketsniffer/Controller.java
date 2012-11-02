@@ -32,12 +32,14 @@ public class Controller implements ClientPacketEventListener {
 
     public static Controller getInstance() {
         if (instance == null) {
-            instance = new Controller();
+            new Controller();
         }
         return instance;
     }
 
     private Controller() {
+        instance = this;
+
         baseDir = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + NAME);
         baseDir.mkdirs();
 

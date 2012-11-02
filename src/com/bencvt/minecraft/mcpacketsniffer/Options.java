@@ -110,7 +110,7 @@ public class Options {
 
     public static synchronized void reloadOptionsFileIfModified() {
         File optionsFile = getOptionsFile();
-        if (optionsFile.lastModified() > lastModified) {
+        if (!optionsFile.exists() || optionsFile.lastModified() > lastModified) {
             Controller.getEventLog().info("Reloading " + optionsFile +
                     ". Some changes won't take effect until a new connection is established.");
             Controller.getOptions().load();
