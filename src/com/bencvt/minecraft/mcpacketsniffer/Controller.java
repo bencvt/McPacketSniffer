@@ -15,34 +15,33 @@ import com.bencvt.minecraft.mcpacketsniffer.Util.FileLogger;
  * Controller class that sets up the environment and creates ConnectionLog instances
  * whenever a new connection is established.
  */
-public class LogManager implements ClientPacketEventListener {
+public class Controller implements ClientPacketEventListener {
     public static final String NAME = "McPacketSniffer";
     public static final String VERSION = "3.0-SNAPSHOT [1.4.2]";
     public static final long OPTIONS_CHECK_RELOAD_INTERVAL = 20000;
     public static final long DUMP_STATS_INTERVAL = 30000;
 
-    public static LogManager instance;
-    public static Minecraft minecraft;
-    public static Logger eventLog;
-    public static Options options;
-    public static File baseDirectory;
-    public static PacketFilter packetFilter = new PacketFilter();
-    public static PacketLoggers packetLoggers = new PacketLoggers();
+    private static Controller instance;
+
+    public static final PacketFilter packetFilter = new PacketFilter();
+    public static final PacketLoggers packetLoggers = new PacketLoggers();
+    private final Logger eventLog;
+    private final Options options;
+    private final File baseDir;
     private ConnectionLog activeConnectionLog;
 
-    public LogManager(Minecraft minecraft) {
-        if (instance != null) {
-            throw new IllegalStateException("multiple instances of singleton");
+    public static Controller getInstance() {
+        if (instance == null) {
+            instance = new Controller();
         }
-        instance = this;
-        LogManager.minecraft = minecraft;
+        return instance;
     }
 
-    public void init() {
-        baseDirectory = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + NAME);
-        baseDirectory.mkdirs();
+    private Controller() {
+        baseDir = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + NAME);
+        baseDir.mkdirs();
 
-        eventLog = new FileLogger(baseDirectory, NAME, true);
+        eventLog = new FileLogger(baseDir, NAME, true);
         eventLog.info("new Minecraft session, loaded " + NAME + " v" + VERSION);
 
         options = new Options();
@@ -50,6 +49,16 @@ public class LogManager implements ClientPacketEventListener {
         Options.watchFileForReload();
 
         PacketHooks.register(this);
+    }
+
+    public static Logger getEventLog() {
+        return getInstance().eventLog;
+    }
+    public static Options getOptions() {
+        return getInstance().options;
+    }
+    public static File getBaseDir() {
+        return getInstance().baseDir;
     }
 
     @Override

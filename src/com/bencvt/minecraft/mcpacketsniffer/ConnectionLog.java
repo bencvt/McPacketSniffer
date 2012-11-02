@@ -37,18 +37,18 @@ public class ConnectionLog {
         long now = System.currentTimeMillis();
 
         String connectionAddress = PacketLoggersBase.connectionAddressToString(connection);
-        LogManager.eventLog.info("starting log for " + connectionAddress);
+        Controller.getEventLog().info("starting log for " + connectionAddress);
 
         // determine log file name
-        File outputDir = LogManager.baseDirectory;
+        File outputDir = Controller.getBaseDir();
         String suffix = "";
-        if (LogManager.options.NEW_FILE_PER_CONNECTION) {
+        if (Controller.getOptions().NEW_FILE_PER_CONNECTION) {
             // e.g., "_20120518_133948_mc.example.com"
             suffix = "_" + PacketLoggersBase.timestampToString(now)
                     .replace(' ', '_').replaceAll("[:\\-]", "").substring(0, 15);
             suffix += "_" + connectionAddress;
             // use a subdirectory
-            outputDir = new File(LogManager.baseDirectory, "logs");
+            outputDir = new File(outputDir, "logs");
         }
         outputDir.mkdirs();
         File logFile = new File(outputDir, "packets" + suffix + ".txt");
@@ -58,7 +58,7 @@ public class ConnectionLog {
         try {
             logWriter = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
         } catch (IOException e) {
-            LogManager.eventLog.log(Level.SEVERE, "unable to open packet log file for writing", e);
+            Controller.getEventLog().log(Level.SEVERE, "unable to open packet log file for writing", e);
             logWriter = null;
             return false;
         }
@@ -68,7 +68,7 @@ public class ConnectionLog {
             stats = new StatRecorder(connectionAddress, now, new File(outputDir, "stats" + suffix + ".txt"));
             stats.start();
         } catch (Exception e) {
-            LogManager.eventLog.log(Level.SEVERE, "unable to start recording stats", e);
+            Controller.getEventLog().log(Level.SEVERE, "unable to start recording stats", e);
             logWriter.close();
             logWriter = null;
             return false;
@@ -86,7 +86,7 @@ public class ConnectionLog {
         logWriter.println(line.toString());
         logWriter.flush();
 
-        if (LogManager.options.FLUSH_INTERVAL > 0 && !LogManager.options.FLUSH_AFTER_EVERY_PACKET) {
+        if (Controller.getOptions().FLUSH_INTERVAL > 0 && !Controller.getOptions().FLUSH_AFTER_EVERY_PACKET) {
             startFlusherThread();
         }
 
@@ -94,7 +94,7 @@ public class ConnectionLog {
     }
 
     private void startFlusherThread() {
-        flusherThread = new Thread(LogManager.NAME + " packet log flusher") {
+        flusherThread = new Thread(Controller.NAME + " packet log flusher") {
             @Override
             public void run() {
                 while (isRunning()) {
@@ -104,7 +104,7 @@ public class ConnectionLog {
                         }
                     }
                     try {
-                        sleep(Math.max(1000, LogManager.options.FLUSH_INTERVAL));
+                        sleep(Math.max(1000, Controller.getOptions().FLUSH_INTERVAL));
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -116,7 +116,7 @@ public class ConnectionLog {
 
     public void stop(String reason) {
         if (isRunning()) {
-            LogManager.eventLog.info("stopping log: " + reason);
+            Controller.getEventLog().info("stopping log: " + reason);
 
             synchronized (logWriterLock) {
                 StringBuilder line = new StringBuilder();
@@ -140,7 +140,7 @@ public class ConnectionLog {
         stats.record(dir, packet.getPacketId(), packet.getPacketSize());
 
         // filter packets
-        if (!LogManager.packetFilter.shouldLogPacket(dir, packet)) {
+        if (!Controller.packetFilter.shouldLogPacket(dir, packet)) {
             return;
         }
 
@@ -159,7 +159,7 @@ public class ConnectionLog {
 
     private void logLine(String line) {
         logWriter.println(line.toString());
-        if (LogManager.options.FLUSH_AFTER_EVERY_PACKET) {
+        if (Controller.getOptions().FLUSH_AFTER_EVERY_PACKET) {
             logWriter.flush();
         }
     }
@@ -172,7 +172,7 @@ public class ConnectionLog {
         String packetName = PacketInfo.getPacketShortName(packet.getPacketId());
         if (packetName == null) {
             packetName = "????????????";
-            LogManager.eventLog.severe("packet missing from PacketInfo: " + packet.getPacketId());
+            Controller.getEventLog().severe("packet missing from PacketInfo: " + packet.getPacketId());
         }
         line.append(' ').append(packetName);
         for (int pad = packetName.length(); pad < 13; pad++) {
@@ -180,6 +180,6 @@ public class ConnectionLog {
         }
 
         // packet-specific loggers handle the rest of the line's contents
-        LogManager.packetLoggers.dispatch(line, dir, packet);
+        Controller.packetLoggers.dispatch(line, dir, packet);
     }
 }

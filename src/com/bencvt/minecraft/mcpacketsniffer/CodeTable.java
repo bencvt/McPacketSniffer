@@ -151,9 +151,9 @@ public class CodeTable {
         } else {
             line.append(value);
         }
-        if (value == null && LogManager.options.LOG_MISSING_CODES && !missingCodes.contains(code)) {
+        if (value == null && Controller.getOptions().LOG_MISSING_CODES && !missingCodes.contains(code)) {
             missingCodes.add(code);
-            LogManager.eventLog.log(Level.WARNING,
+            Controller.getEventLog().log(Level.WARNING,
                     "unrecognized code " + code + " for " + tableName,
                     new Exception());
         }

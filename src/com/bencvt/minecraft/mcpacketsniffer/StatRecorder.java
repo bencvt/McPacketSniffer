@@ -31,13 +31,13 @@ public class StatRecorder {
     }
 
     public void start() {
-        new Thread(LogManager.NAME + " stat recorder") {
+        new Thread(Controller.NAME + " stat recorder") {
             @Override
             public void run() {
                 while (!stopWorkerThread) {
                     dumpStats();
                     try {
-                        sleep(LogManager.DUMP_STATS_INTERVAL);
+                        sleep(Controller.DUMP_STATS_INTERVAL);
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -84,7 +84,7 @@ public class StatRecorder {
             }
             writer.close();
         } catch (IOException e) {
-            LogManager.eventLog.log(Level.SEVERE, "unable to save stats", e);
+            Controller.getEventLog().log(Level.SEVERE, "unable to save stats", e);
             stopWorkerThread = true;
             // don't stop the packet log manager
         }
@@ -97,7 +97,7 @@ public class StatRecorder {
         long packetTotal = 0L;
         long byteTotal = 0L;
         for (int i = 0; i < packetCounts.length; i++) {
-            if (LogManager.options.STATS_ALL_PACKETS || packetCounts[i] > 0) {
+            if (Controller.getOptions().STATS_ALL_PACKETS || packetCounts[i] > 0) {
                 String packetName = PacketInfo.getPacketShortName(i);
                 if (packetName == null) {
                     continue;

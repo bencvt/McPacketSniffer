@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.Entity;
 import net.minecraft.src.EntityList;
 import net.minecraft.src.EntityOtherPlayerMP;
@@ -80,8 +81,8 @@ public abstract class PacketLoggersBase {
             // unprintable or unicode
             char ch = s.charAt(i);
             if (ch > 0x7f || ch < 0x20) {
-                if (ch == '\u00A7' && !LogManager.options.COLOR_ESCAPE.isEmpty()) {
-                    line.append(LogManager.options.COLOR_ESCAPE);
+                if (ch == '\u00A7' && !Controller.getOptions().COLOR_ESCAPE.isEmpty()) {
+                    line.append(Controller.getOptions().COLOR_ESCAPE);
                 } else if (ch == '\n') {
                     line.append("\\n");
                 } else if (ch == '\r') {
@@ -147,11 +148,11 @@ public abstract class PacketLoggersBase {
      */
     private static void logCoordsWork(StringBuilder line, int blockX, int blockY, int blockZ) {
         line.append('(');
-        if (LogManager.options.COORDS_INCLUDE_REGION) {
+        if (Controller.getOptions().COORDS_INCLUDE_REGION) {
             line.append(blockX >> 9).append(',');
             line.append(blockZ >> 9).append(';');
         }
-        if (LogManager.options.COORDS_INCLUDE_CHUNK) {
+        if (Controller.getOptions().COORDS_INCLUDE_CHUNK) {
             line.append(blockX >> 4).append(',');
             line.append(blockZ >> 4).append(';');
         }
@@ -284,7 +285,7 @@ public abstract class PacketLoggersBase {
     }
 
     public static void logExistingEntity(StringBuilder line, int entityId) {
-        Entity entity = LogManager.minecraft.theWorld.getEntityByID(entityId);
+        Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(entityId);
         line.append("{eid=").append(entityId);
         line.append(" type=");
         logEntityType(line, entity);

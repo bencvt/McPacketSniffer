@@ -74,7 +74,7 @@ public abstract class Util {
             }
             throw new RuntimeException("field not found");
         } catch (Exception e) {
-            LogManager.eventLog.log(Level.SEVERE,
+            Controller.getEventLog().log(Level.SEVERE,
                     "unable to reflect field type " + type + "#" + n + " for " + obj, e);
             return null;
         }
@@ -86,7 +86,7 @@ public abstract class Util {
             field.setAccessible(true);
             return field.get(obj);
         } catch (Exception e) {
-            LogManager.eventLog.log(Level.SEVERE,
+            Controller.getEventLog().log(Level.SEVERE,
                     "unable to reflect field named " + name + " for " + obj, e);
             return null;
         }
@@ -94,7 +94,7 @@ public abstract class Util {
 
     public static void copyResourceToFile(String resourcePath, File destFile) {
         try {
-            InputStream in = LogManager.instance.getClass().getResourceAsStream(resourcePath);
+            InputStream in = Controller.class.getResourceAsStream(resourcePath);
             FileOutputStream out = new FileOutputStream(destFile);
             byte[] buf = new byte[1024];
             int len;
@@ -104,7 +104,7 @@ public abstract class Util {
             in.close();
             out.close();
         } catch (Exception e) {
-            LogManager.eventLog.log(Level.SEVERE,
+            Controller.getEventLog().log(Level.SEVERE,
                     "unable to copy resource " + resourcePath + " to " + destFile, e);
         }
     }

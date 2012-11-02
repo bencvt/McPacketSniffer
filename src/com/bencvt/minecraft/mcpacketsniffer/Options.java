@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import net.minecraft.client.Minecraft;
+
 public class Options {
     public boolean NEW_FILE_PER_CONNECTION;
     public boolean INTEGRATED_SERVER;
@@ -35,16 +37,16 @@ public class Options {
             try {
                 File moveTo = optionsFile;
                 for (int i = 0; moveTo.exists(); i++) {
-                    moveTo = new File(LogManager.baseDirectory, "options_" + i + "_invalid.txt");
+                    moveTo = new File(Controller.getBaseDir(), "options_" + i + "_invalid.txt");
                 }
                 optionsFile.renameTo(moveTo);
-                LogManager.eventLog.log(Level.SEVERE,
+                Controller.getEventLog().log(Level.SEVERE,
                         "Unable to load options. Renamed to " + moveTo, softFail);
                 copyDefaults(optionsFile);
                 properties.load(new FileInputStream(optionsFile));
                 loadWork(properties);
             } catch (Exception hardFail) {
-                LogManager.eventLog.log(Level.SEVERE,
+                Controller.getEventLog().log(Level.SEVERE,
                         "unable to gracefully handle invalid options", hardFail);
                 throw new RuntimeException(hardFail);
             }
@@ -54,7 +56,7 @@ public class Options {
 
     private static void copyDefaults(File optionsFile) {
         Util.copyResourceToFile("/com/bencvt/minecraft/mcpacketsniffer/default-options.properties", optionsFile);
-        LogManager.eventLog.info("Restored " + optionsFile);
+        Controller.getEventLog().info("Restored " + optionsFile);
     }
 
     private void loadWork(Properties properties) {
@@ -87,16 +89,16 @@ public class Options {
     }
 
     public static File getOptionsFile() {
-        return new File(LogManager.baseDirectory, "options.txt");
+        return new File(Controller.getBaseDir(), "options.txt");
     }
 
     public static void watchFileForReload() {
-        new Thread(LogManager.NAME + " options file watcher") {
+        new Thread(Controller.NAME + " options file watcher") {
             @Override
             public void run() {
-                while (LogManager.minecraft.running) {
+                while (Minecraft.getMinecraft().running) {
                     try {
-                        sleep(LogManager.OPTIONS_CHECK_RELOAD_INTERVAL);
+                        sleep(Controller.OPTIONS_CHECK_RELOAD_INTERVAL);
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -109,11 +111,9 @@ public class Options {
     public static synchronized void reloadOptionsFileIfModified() {
         File optionsFile = getOptionsFile();
         if (optionsFile.lastModified() > lastModified) {
-            LogManager.eventLog.info("Reloading " + optionsFile +
+            Controller.getEventLog().info("Reloading " + optionsFile +
                     ". Some changes won't take effect until a new connection is established.");
-            Options newOptions = new Options();
-            newOptions.load();
-            LogManager.options = newOptions;
+            Controller.getOptions().load();
         }
     }
 }

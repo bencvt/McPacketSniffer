@@ -1,20 +1,20 @@
 package net.minecraft.src;
 
-import com.bencvt.minecraft.mcpacketsniffer.LogManager;
+import com.bencvt.minecraft.mcpacketsniffer.Controller;
 
 public class mod_McPacketSniffer extends BaseMod {
     @Override
     public void load() {
-        new LogManager(ModLoader.getMinecraftInstance()).init();
+        Controller.getInstance();
     }
 
     @Override
     public String getName() {
-        return LogManager.NAME;
+        return Controller.NAME;
     }
 
     @Override
     public String getVersion() {
-        return LogManager.VERSION;
+        return Controller.VERSION;
     }
 }
