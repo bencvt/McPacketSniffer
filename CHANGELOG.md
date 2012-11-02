@@ -1,3 +1,6 @@
+## implemented but not yet released
+- ModLoader/Forge is no longer required
+
 ## 3.0
 - updated for Minecraft 1.4.2 (protocol version 47)
 - added Forge compatibility layer

@@ -22,6 +22,7 @@ public class MemoryConnection implements INetworkManager
 
     // ==== Begin modified code
     public static final PacketHooks packetHooksClient = new PacketHooks();
+    static { packetHooksClient.load(); }
     public boolean clientSide;
     // ==== End modified code
 

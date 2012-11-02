@@ -88,6 +88,7 @@ public class TcpConnection implements INetworkManager
 
     // ==== Begin modified code
     public static final PacketHooks packetHooksClient = new PacketHooks();
+    static { packetHooksClient.load(); }
     // ==== End modified code
 
     public TcpConnection(Socket par1Socket, String par2Str, NetHandler par3NetHandler) throws IOException

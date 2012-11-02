@@ -1,6 +1,10 @@
 package net.minecraft.src;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.LinkedHashSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Provide an API for inspecting packets sent between the Minecraft client
@@ -22,10 +26,14 @@ import java.util.LinkedHashSet;
  * <li>Mod-specific connections (client <-> wherever, e.g. the mod's website to
  *     automatically check for updates)</li>
  * </ul>
+ * 
+ * Also provide a bare-bones mod loading system: search the jar/package where
+ * this class is located for "PacketHooksBootstrap*.class", instantiating each.
+ * 
  * @author bencvt
  */
 public class PacketHooks {
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
 
     public interface ClientPacketEventListener {
         /**
@@ -68,6 +76,7 @@ public class PacketHooks {
         public void onCloseConnection(INetworkManager connection, boolean voluntarily, String reason, Object[] reasonArgs);
     }
 
+    private static boolean modsLoaded;
     private static LinkedHashSet<ClientPacketEventListener> listeners = new LinkedHashSet<ClientPacketEventListener>();
 
     public static boolean register(ClientPacketEventListener listener) {
@@ -106,9 +115,9 @@ public class PacketHooks {
         return listeners.remove(listener);
     }
 
-    //
+    // ====
     // Dispatch functions, should only be called from modified vanilla classes
-    //
+    // ====
 
     protected void dispatchNewConnectionEvent(INetworkManager connection) {
         for (ClientPacketEventListener listener : listeners) {
@@ -146,5 +155,45 @@ public class PacketHooks {
 
     protected PacketHooks() {
         // Do nothing. Just marking the constructor as protected.
+    }
+
+    // ====
+    // Mod bootstrapper, makes ModLoader/Forge unnecessary.
+    // ====
+
+    protected void load() {
+        if (modsLoaded) {
+            return;
+        }
+        modsLoaded = true;
+        try {
+            // Search the jar/zip where this class resides for specifically
+            // named classes, and create a new instance for each.
+            final String packagePrefix = PacketHooks.class.getPackage() == null ? "" : PacketHooks.class.getPackage().getName() + ".";
+            final File src = new File(PacketHooks.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            if (!src.isFile()) {
+                // This class doesn't live in a jar, probably because we're in
+                // a dev environment (e.g. Eclipse). Do nothing.
+                return;
+            }
+            final FileInputStream fileStream = new FileInputStream(src);
+            final ZipInputStream zipStream = new ZipInputStream(fileStream);
+            while (true) {
+                ZipEntry zipEntry = zipStream.getNextEntry();
+                if (zipEntry == null) {
+                    zipStream.close();
+                    fileStream.close();
+                    return;
+                }
+                String className = zipEntry.getName();
+                if (!zipEntry.isDirectory() && className.startsWith("PacketHooksBootstrap") && className.endsWith(".class")) {
+                    className = packagePrefix + className.replaceAll(".class$", "");
+                    PacketHooks.class.getClassLoader().loadClass(className).newInstance();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("PacketHooks unable to bootstrap mods:");
+            e.printStackTrace();
+        }
     }
 }

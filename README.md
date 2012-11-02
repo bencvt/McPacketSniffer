@@ -27,16 +27,16 @@ Why bother modding the client when you could just use one of dozens of
 
 Installing this mod works exactly the same as any other Minecraft client mod.
 
-1.  Make sure that either [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/)
-    or [Forge](http://www.minecraftforge.net/forum/) is installed, as this is a
-    base requirement.
-2.  Download and extract the zip for the latest release.
-3.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
+1.  Download and extract the zip for the latest release.
+2.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
     remove the `META-INF` folder.
 
 Utilities like [Magic Launcher](http://www.minecraftforum.net/topic/939149-/)
 can automate this process. Highly recommended! Manually copying `.class` files
 is for the birds.
+
+Neither [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/) nor
+[Forge](http://www.minecraftforge.net/forum/) is required.
 
 ## Compatibility
 
