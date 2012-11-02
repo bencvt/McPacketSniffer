@@ -50,13 +50,15 @@ McPacketSniffer's version of these classes in your final `minecraft.jar`.
 
 ## Usage
 
+McPacketSniffer is a utility; there is no GUI. It's all text files.
+
 Start Minecraft with this mod installed, which will automatically create
-`(minecraft dir)/mods/McPacketSniffer/options.txt`. You can open this file in a
+`(minecraft-dir)/mods/McPacketSniffer/options.txt`. You can open this file in a
 text editor to specify exactly what you want to log. Any changes you make will
 take effect within a few seconds; no need to restart Minecraft, though some
 settings won't take effect until you open a new server connection.
 
-The packet logs are located in `(minecraft dir)/mods/McPacketSniffer/logs`.
+The packet logs are located in `(minecraft-dir)/mods/McPacketSniffer/logs`.
 
 Note that the packet logs capture normal client <-> server traffic. This does
 *not* include every piece of data sent and received by the Minecraft client.
@@ -76,3 +78,8 @@ Known exceptions:
 McPacketSniffer is open source! Visit the official project page at
 [github.com/bencvt/McPacketSniffer](https://github.com/bencvt/McPacketSniffer).
 Build instructions are located in `README-dev.md`.
+
+If you're looking for a mod that captures just chat packets in a more
+user-friendly format, check out this mod's younger brother,
+[McChatLogger](https://github.com/bencvt/McChatLogger). Unlike many brothers,
+McChatLogger and McPacketSniffer can run simultaneously without conflict.
