@@ -2,7 +2,7 @@
 set -e
 
 # replace with version number if creating a release
-# don't forget to update LogManager.VERSION and mod_McPacketSniffer.info
+# don't forget to update Controller.VERSION and mcmod.info
 JAR=$PWD/McPacketSniffer-SNAPSHOT.zip
 
 rm $JAR || true
