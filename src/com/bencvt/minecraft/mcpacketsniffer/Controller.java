@@ -84,9 +84,9 @@ public class Controller implements ClientPacketEventListener {
     }
 
     @Override
-    public void onCloseConnection(INetworkManager connection, boolean voluntarily, String reason, Object[] reasonArgs) {
+    public void onCloseConnection(INetworkManager connection, String reason, Object[] reasonArgs) {
         if (activeConnectionLog != null) {
-            if (reasonArgs.length > 0) {
+            if (reasonArgs != null && reasonArgs.length > 0) {
                 reason += ": ";
                 for (int i = 0; i < reasonArgs.length; i++) {
                     if (i > 0) {

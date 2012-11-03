@@ -33,7 +33,7 @@ import java.util.zip.ZipInputStream;
  * @author bencvt
  */
 public class PacketHooks {
-    public static final int VERSION = 5;
+    public static final int VERSION = 6;
 
     public interface ClientPacketEventListener {
         /**
@@ -63,17 +63,14 @@ public class PacketHooks {
          * closes.
          * 
          * @param connection
-         * @param voluntarily if true, the player chose to disconnect in the
-         *                    in-game GUI. If false, the server booted the
-         *                    player or the connection failed otherwise.
          * @param reason the reason the connection was closed, e.g.
-         *               "disconnect.timeout".
+         *               "disconnect.timeout", "disconnect.closed".
          * @param reasonArgs if this array is non-empty then reason's localized
          *                   string is intended for use in String.format with
          *                   these arguments. Only present for certain error
          *                   types.
          */
-        public void onCloseConnection(INetworkManager connection, boolean voluntarily, String reason, Object[] reasonArgs);
+        public void onCloseConnection(INetworkManager connection, String reason, Object[] reasonArgs);
     }
 
     private static boolean modsLoaded;
@@ -131,9 +128,9 @@ public class PacketHooks {
         }
     }
 
-    protected void dispatchCloseConnectionEvent(INetworkManager connection, boolean voluntarily, String reason, Object[] reasonArgs) {
+    protected void dispatchCloseConnectionEvent(INetworkManager connection, String reason, Object[] reasonArgs) {
         for (ClientPacketEventListener listener : listeners) {
-            listener.onCloseConnection(connection, voluntarily, reason, reasonArgs);
+            listener.onCloseConnection(connection, reason, reasonArgs);
         }
     }
 

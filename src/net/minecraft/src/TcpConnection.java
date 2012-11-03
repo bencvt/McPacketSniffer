@@ -420,7 +420,7 @@ public class TcpConnection implements INetworkManager
                 ;
             }
             // ==== Begin modified code
-            packetHooksClient.dispatchCloseConnectionEvent(this, false, par1Str, par2ArrayOfObj);
+            packetHooksClient.dispatchCloseConnectionEvent(this, par1Str, par2ArrayOfObj);
             // ==== End modified code
         }
     }
@@ -488,9 +488,6 @@ public class TcpConnection implements INetworkManager
             this.isServerTerminating = true;
             this.readThread.interrupt();
             (new TcpMonitorThread(this)).start();
-            // ==== Begin modified code
-            packetHooksClient.dispatchCloseConnectionEvent(this, true, "Quitting", new Object[] {});
-            // ==== End modified code
         }
     }
 
