@@ -124,6 +124,9 @@ public class MemoryConnection implements INetworkManager
     public void serverShutdown()
     {
         this.shuttingDown = true;
+        // ==== Begin modified code
+        packetHooksClient.dispatchCloseConnectionEvent(this, "Quitting", new Object[] {});
+        // ==== End modified code
     }
 
     /**
@@ -135,9 +138,6 @@ public class MemoryConnection implements INetworkManager
         this.shuttingDown = true;
         this.shutdownReason = par1Str;
         this.field_74439_g = par2ArrayOfObj;
-        // ==== Begin modified code
-        packetHooksClient.dispatchCloseConnectionEvent(this, par1Str, par2ArrayOfObj);
-        // ==== End modified code
     }
 
     /**
