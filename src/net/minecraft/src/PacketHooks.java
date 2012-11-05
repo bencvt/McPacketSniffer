@@ -47,6 +47,21 @@ public class PacketHooks {
         public void onNewConnection(INetworkManager connection);
 
         /**
+         * This event occurs whenever a TcpConnection or MemoryConnection
+         * closes.
+         * 
+         * @param connection
+         * @param reason the reason the connection was closed, e.g.
+         *               "disconnect.timeout", "disconnect.closed".
+         *               Will always be "Quitting" for MemoryConnections.
+         * @param reasonArgs if this array is non-empty then reason's localized
+         *                   string is intended for use in String.format with
+         *                   these arguments. Only present for certain error
+         *                   types.
+         */
+        public void onCloseConnection(INetworkManager connection, String reason, Object[] reasonArgs);
+
+        /**
          * This event occurs right before {@link Packet#writePacketData} (when
          * sending) or right before {@link Packet#processPacket} (when
          * receiving).
@@ -64,26 +79,12 @@ public class PacketHooks {
          *         explicitly cancel the event, while <b>false</b> will
          *         explicitly allow the event.
          *         <p>
-         *         Warning: cancelling packets may cause game state
+         *         Warning: canceling packets may cause game state
          *         inconsistencies. It's safe for some packet types (e.g.,
          *         chat), but definitely not safe for others (e.g., respawn).
          *         Only return true if you know what you're doing!
          */
         public boolean onPacket(INetworkManager connection, Packet packet, boolean send, boolean cancelled);
-
-        /**
-         * This event occurs whenever a TcpConnection or MemoryConnection
-         * closes.
-         * 
-         * @param connection
-         * @param reason the reason the connection was closed, e.g.
-         *               "disconnect.timeout", "disconnect.closed".
-         * @param reasonArgs if this array is non-empty then reason's localized
-         *                   string is intended for use in String.format with
-         *                   these arguments. Only present for certain error
-         *                   types.
-         */
-        public void onCloseConnection(INetworkManager connection, String reason, Object[] reasonArgs);
     }
 
     private static boolean modsLoaded;

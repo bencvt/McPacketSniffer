@@ -77,14 +77,6 @@ public class Controller implements ClientPacketEventListener {
     }
 
     @Override
-    public boolean onPacket(INetworkManager connection, Packet packet, boolean send, boolean cancelled) {
-        if (activeConnectionLog != null) {
-            activeConnectionLog.onPacket(send ? PacketDirection.C2S : PacketDirection.S2C, packet);
-        }
-        return cancelled;
-    }
-
-    @Override
     public void onCloseConnection(INetworkManager connection, String reason, Object[] reasonArgs) {
         if (activeConnectionLog != null) {
             if (reasonArgs != null && reasonArgs.length > 0) {
@@ -99,5 +91,13 @@ public class Controller implements ClientPacketEventListener {
             activeConnectionLog.stop(reason);
             activeConnectionLog = null;
         }
+    }
+
+    @Override
+    public boolean onPacket(INetworkManager connection, Packet packet, boolean send, boolean cancelled) {
+        if (activeConnectionLog != null) {
+            activeConnectionLog.onPacket(send ? PacketDirection.C2S : PacketDirection.S2C, packet);
+        }
+        return cancelled;
     }
 }
