@@ -7,8 +7,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Provide an API for inspecting packets sent between the Minecraft client
- * and a Minecraft server. This can include the integrated server.
+ * Provides a basic API for inspecting packets sent between the Minecraft
+ * client and a Minecraft server. This can include the integrated server.
  * <p>
  * This does *not* capture every piece of data sent and received by the
  * Minecraft client. Known exceptions:<ul>
@@ -27,13 +27,17 @@ import java.util.zip.ZipInputStream;
  *     automatically check for updates)</li>
  * </ul>
  * 
- * Also provide a bare-bones mod loading system: search the jar/package where
+ * Includes a Forge compatibility layer so this API and Forge's can co-exist
+ * without either breaking the other's.
+ * <p>
+ * Also provides a bare-bones mod loading system: search the jar/package where
  * this class is located for "PacketHooksBootstrap*.class", instantiating each.
+ * This makes Forge/ModLoader completely optional for mods using this API.
  * 
  * @author bencvt
  */
 public class PacketHooks {
-    public static final int VERSION = 6;
+    public static final int VERSION = 7;
 
     public interface ClientPacketEventListener {
         /**
@@ -43,20 +47,29 @@ public class PacketHooks {
         public void onNewConnection(INetworkManager connection);
 
         /**
-         * This event occurs right before Packet.writePacketData() (when sending)
-         * or right before Packet.processPacket() (when receiving).
+         * This event occurs right before {@link Packet#writePacketData} (when
+         * sending) or right before {@link Packet#processPacket} (when
+         * receiving).
          * 
          * @param connection
          * @param packet
          * @param send true if the client originated this packet, false if the
          *             server did
-         * @param highPriority normally packets read from the input stream sit
-         *                     in a queue for later processing. However certain
-         *                     packets (flagged "isWritePacket") are processed
-         *                     immediately.
-         * @see Packet#isWritePacket
+         * @param cancelled true if this event was cancelled by another
+         *                  ClientPacketEventListener, false normally
+         * @return whether to allow the packet to be sent/processed.
+         *         <p>
+         *         Normally, just return the value of the <b>cancelled</b>
+         *         parameter. Alternately, returning <b>true</b> will
+         *         explicitly cancel the event, while <b>false</b> will
+         *         explicitly allow the event.
+         *         <p>
+         *         Warning: cancelling packets may cause game state
+         *         inconsistencies. It's safe for some packet types (e.g.,
+         *         chat), but definitely not safe for others (e.g., respawn).
+         *         Only return true if you know what you're doing!
          */
-        public void onPacket(INetworkManager connection, Packet packet, boolean send, boolean highPriority);
+        public boolean onPacket(INetworkManager connection, Packet packet, boolean send, boolean cancelled);
 
         /**
          * This event occurs whenever a TcpConnection or MemoryConnection
@@ -122,10 +135,13 @@ public class PacketHooks {
         }
     }
 
-    protected void dispatchPacketEvent(INetworkManager connection, Packet packet, boolean send, boolean highPriority) {
+    /** @return true if the packet should not be sent/processed */
+    protected boolean dispatchPacketEvent(INetworkManager connection, Packet packet, boolean send) {
+        boolean cancelled = false;
         for (ClientPacketEventListener listener : listeners) {
-            listener.onPacket(connection, packet, send, highPriority);
+            cancelled = listener.onPacket(connection, packet, send, cancelled);
         }
+        return cancelled;
     }
 
     protected void dispatchCloseConnectionEvent(INetworkManager connection, String reason, Object[] reasonArgs) {
@@ -135,7 +151,7 @@ public class PacketHooks {
     }
 
     /**
-     * Forge compatibility
+     * Forge compatibility layer, verified working as of Forge v6.0.1.
      */
     protected void dispatchForgeRemoteCloseConnectionEvent(INetworkManager connection, NetHandler netHandler) {
         try {
@@ -170,7 +186,10 @@ public class PacketHooks {
             final File src = new File(PacketHooks.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             if (!src.isFile()) {
                 // This class doesn't live in a jar, probably because we're in
-                // a dev environment (e.g. Eclipse). Do nothing.
+                // a dev environment (e.g. using MCP's startclient script, or
+                // launching in Eclipse).
+                // 
+                // Do nothing.
                 return;
             }
             final FileInputStream fileStream = new FileInputStream(src);

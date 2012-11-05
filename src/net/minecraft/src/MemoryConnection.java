@@ -53,12 +53,12 @@ public class MemoryConnection implements INetworkManager
     {
         if (!this.shuttingDown)
         {
-            this.pairedConnection.processOrCachePacket(par1Packet);
             // ==== Begin modified code
-            if (clientSide) {
-                packetHooksClient.dispatchPacketEvent(this, par1Packet, true, false);
+            if (clientSide && packetHooksClient.dispatchPacketEvent(this, par1Packet, true)) {
+                return;
             }
             // ==== End modified code
+            this.pairedConnection.processOrCachePacket(par1Packet);
         }
     }
 
@@ -89,8 +89,8 @@ public class MemoryConnection implements INetworkManager
         {
             Packet var2 = (Packet)this.readPacketCache.remove(0);
             // ==== Begin modified code
-            if (clientSide) {
-                packetHooksClient.dispatchPacketEvent(this, var2, false, false);
+            if (clientSide && packetHooksClient.dispatchPacketEvent(this, var2, false)) {
+                continue;
             }
             // ==== End modified code
             var2.processPacket(this.myNetHandler);
@@ -125,7 +125,9 @@ public class MemoryConnection implements INetworkManager
     {
         this.shuttingDown = true;
         // ==== Begin modified code
-        packetHooksClient.dispatchCloseConnectionEvent(this, "Quitting", new Object[] {});
+        if (clientSide) {
+            packetHooksClient.dispatchCloseConnectionEvent(this, "Quitting", new Object[] {});
+        }
         // ==== End modified code
     }
 
@@ -179,8 +181,8 @@ public class MemoryConnection implements INetworkManager
         if (par1Packet.isWritePacket() && this.myNetHandler.canProcessPackets())
         {
             // ==== Begin modified code
-            if (clientSide) {
-                packetHooksClient.dispatchPacketEvent(this, par1Packet, false, true);
+            if (clientSide && packetHooksClient.dispatchPacketEvent(this, par1Packet, false)) {
+                return;
             }
             // ==== End modified code
             par1Packet.processPacket(this.myNetHandler);

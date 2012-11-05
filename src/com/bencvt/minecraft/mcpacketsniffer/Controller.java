@@ -77,10 +77,11 @@ public class Controller implements ClientPacketEventListener {
     }
 
     @Override
-    public void onPacket(INetworkManager connection, Packet packet, boolean send, boolean highPriority) {
+    public boolean onPacket(INetworkManager connection, Packet packet, boolean send, boolean cancelled) {
         if (activeConnectionLog != null) {
             activeConnectionLog.onPacket(send ? PacketDirection.C2S : PacketDirection.S2C, packet);
         }
+        return cancelled;
     }
 
     @Override

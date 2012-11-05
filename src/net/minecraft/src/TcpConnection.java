@@ -201,7 +201,11 @@ public class TcpConnection implements INetworkManager
                 if (var2 != null)
                 {
                     // ==== Begin modified code
-                    packetHooksClient.dispatchPacketEvent(this, var2, true, false);
+                    if (packetHooksClient.dispatchPacketEvent(this, var2, true)) {
+                        // Even though we're blocking the packet, return true
+                        // so any remaining packets in the queue get processed.
+                        return true;
+                    }
                     // ==== End modified code
                     Packet.writePacket(var2, this.socketOutputStream);
 
@@ -229,7 +233,11 @@ public class TcpConnection implements INetworkManager
                 if (var2 != null)
                 {
                     // ==== Begin modified code
-                    packetHooksClient.dispatchPacketEvent(this, var2, true, false);
+                    if (packetHooksClient.dispatchPacketEvent(this, var2, true)) {
+                        // Even though we're blocking the packet, return true
+                        // so any remaining packets in the queue get processed.
+                        return true;
+                    }
                     // ==== End modified code
                     Packet.writePacket(var2, this.socketOutputStream);
                     var10000 = field_74467_d;
@@ -353,7 +361,11 @@ public class TcpConnection implements INetworkManager
                     {
                         this.field_74490_x = 0;
                         // ==== Begin modified code
-                        packetHooksClient.dispatchPacketEvent(this, var2, false, true);
+                        if (packetHooksClient.dispatchPacketEvent(this, var2, false)) {
+                            // Even though we're blocking the packet, return true
+                            // so any remaining packets in the queue get processed.
+                            return true;
+                        }
                         // ==== End modified code
                         var2.processPacket(this.theNetHandler);
                     }
@@ -453,7 +465,9 @@ public class TcpConnection implements INetworkManager
         {
             Packet var2 = (Packet)this.readPackets.remove(0);
             // ==== Begin modified code
-            packetHooksClient.dispatchPacketEvent(this, var2, false, false);
+            if (packetHooksClient.dispatchPacketEvent(this, var2, false)) {
+                continue;
+            }
             // ==== End modified code
             var2.processPacket(this.theNetHandler);
         }

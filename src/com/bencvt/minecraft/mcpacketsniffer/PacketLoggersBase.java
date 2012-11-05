@@ -285,8 +285,15 @@ public abstract class PacketLoggersBase {
     }
 
     public static void logExistingEntity(StringBuilder line, int entityId) {
-        Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(entityId);
+        Entity entity = null;
+        if (Minecraft.getMinecraft().theWorld != null) {
+            entity = Minecraft.getMinecraft().theWorld.getEntityByID(entityId);
+        }
         line.append("{eid=").append(entityId);
+        if (entity == null) {
+            line.append('}');
+            return;
+        }
         line.append(" type=");
         logEntityType(line, entity);
         if (entity != null) {
