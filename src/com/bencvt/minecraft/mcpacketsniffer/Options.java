@@ -30,29 +30,33 @@ public class Options {
     public final boolean statsAllPackets;
 
     public Options() {
-        Properties props = loadProperties();
-        newFilePerConnection = Boolean.parseBoolean(props.getProperty("new-file-per-connection"));
-        newFilePerServer = Boolean.parseBoolean(props.getProperty("new-file-per-server"));
-        integratedServer = Boolean.parseBoolean(props.getProperty("integrated-server"));
-        packetWhitelist = loadIntegerCollection(props.getProperty("packet-whitelist"), new HashSet<Integer>(), true);
-        flushAfterEveryPacket = Boolean.parseBoolean(props.getProperty("flush-after-every-packet"));
-        flushInterval = Long.parseLong(props.getProperty("flush-interval"));
-        coordsIncludeRegion = Boolean.parseBoolean(props.getProperty("coords-include-region"));
-        coordsIncludeChunk = Boolean.parseBoolean(props.getProperty("coords-include-chunk"));
-        summarizeBinaryData = Boolean.parseBoolean(props.getProperty("summarize-binary-data"));
-        colorEscape = props.getProperty("color-escape").trim();
-        logMissingCodes = Boolean.parseBoolean(props.getProperty("log-missing-codes"));
-        statsDump = Boolean.parseBoolean(props.getProperty("stats-dump"));
-        statsAllPackets = Boolean.parseBoolean(props.getProperty("stats-all-packets"));
+        this(loadProperties());
+    }
+
+    private Options(Properties props) {
+        newFilePerConnection = Boolean.parseBoolean(notNull(props, "new-file-per-connection"));
+        newFilePerServer = Boolean.parseBoolean(notNull(props, "new-file-per-server"));
+        integratedServer = Boolean.parseBoolean(notNull(props, "integrated-server"));
+        packetWhitelist = loadIntegerCollection(notNull(props, "packet-whitelist"), new HashSet<Integer>(), true);
+        flushAfterEveryPacket = Boolean.parseBoolean(notNull(props, "flush-after-every-packet"));
+        flushInterval = Long.parseLong(notNull(props, "flush-interval"));
+        coordsIncludeRegion = Boolean.parseBoolean(notNull(props, "coords-include-region"));
+        coordsIncludeChunk = Boolean.parseBoolean(notNull(props, "coords-include-chunk"));
+        summarizeBinaryData = Boolean.parseBoolean(notNull(props, "summarize-binary-data"));
+        colorEscape = notNull(props, "color-escape").trim();
+        logMissingCodes = Boolean.parseBoolean(notNull(props, "log-missing-codes"));
+        statsDump = Boolean.parseBoolean(notNull(props, "stats-dump"));
+        statsAllPackets = Boolean.parseBoolean(notNull(props, "stats-all-packets"));
     }
 
     private static Properties loadProperties() {
         if (!OPTIONS_FILE.exists()) {
             copyDefaults();
         }
-        Properties properties = new Properties();
+        Properties props = new Properties();
         try {
-            properties.load(new FileInputStream(OPTIONS_FILE));
+            props.load(new FileInputStream(OPTIONS_FILE));
+            new Options(props); // create a throwaway to validate
         } catch (Exception softFail) {
             try {
                 File moveTo = OPTIONS_FILE;
@@ -63,7 +67,7 @@ public class Options {
                 Controller.getEventLog().log(Level.SEVERE,
                         "Unable to load options. Renamed to " + moveTo, softFail);
                 copyDefaults();
-                properties.load(new FileInputStream(OPTIONS_FILE));
+                props.load(new FileInputStream(OPTIONS_FILE));
             } catch (Exception hardFail) {
                 Controller.getEventLog().log(Level.SEVERE,
                         "unable to gracefully handle invalid options", hardFail);
@@ -71,12 +75,20 @@ public class Options {
             }
         }
         lastModified = OPTIONS_FILE.lastModified();
-        return properties;
+        return props;
     }
 
     private static void copyDefaults() {
         Util.copyResourceToFile("default-options.properties", OPTIONS_FILE);
         Controller.getEventLog().info("Restored " + OPTIONS_FILE);
+    }
+
+    private static String notNull(Properties props, String name) {
+        String result = props.getProperty(name);
+        if (result == null) {
+            throw new IllegalArgumentException("missing required property: " + String.valueOf(name));
+        }
+        return result;
     }
 
     private static Collection<Integer> loadIntegerCollection(String items, Collection<Integer> storage, boolean makeUnmodifiable) {
