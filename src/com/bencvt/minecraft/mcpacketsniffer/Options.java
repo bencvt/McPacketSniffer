@@ -14,9 +14,6 @@ public class Options {
     public static final File OPTIONS_FILE = new File(Controller.getBaseDir(), "options.txt");
     private static long lastModified;
 
-    public final boolean newFilePerConnection;
-    public final boolean newFilePerServer;
-    public final boolean integratedServer;
     public final Collection<Integer> packetWhitelist;
     public final boolean flushAfterEveryPacket;
     public final long flushInterval;
@@ -25,6 +22,10 @@ public class Options {
     public final boolean summarizeBinaryData;
     public final String colorEscape;
     public final boolean logMissingCodes;
+
+    public final boolean newFilePerConnection;
+    public final boolean newFilePerServer;
+    public final boolean integratedServer;
     public final boolean statsDump;
     public final boolean statsAllPackets;
 
@@ -33,9 +34,6 @@ public class Options {
     }
 
     private Options(Properties props) {
-        newFilePerConnection = Boolean.parseBoolean(notNull(props, "new-file-per-connection"));
-        newFilePerServer = Boolean.parseBoolean(notNull(props, "new-file-per-server"));
-        integratedServer = Boolean.parseBoolean(notNull(props, "integrated-server"));
         packetWhitelist = loadIntegerCollection(notNull(props, "packet-whitelist"), new HashSet<Integer>(), true);
         flushAfterEveryPacket = Boolean.parseBoolean(notNull(props, "flush-after-every-packet"));
         flushInterval = Long.parseLong(notNull(props, "flush-interval"));
@@ -44,6 +42,10 @@ public class Options {
         summarizeBinaryData = Boolean.parseBoolean(notNull(props, "summarize-binary-data"));
         colorEscape = notNull(props, "color-escape").trim();
         logMissingCodes = Boolean.parseBoolean(notNull(props, "log-missing-codes"));
+
+        newFilePerConnection = Boolean.parseBoolean(notNull(props, "new-file-per-connection"));
+        newFilePerServer = Boolean.parseBoolean(notNull(props, "new-file-per-server"));
+        integratedServer = Boolean.parseBoolean(notNull(props, "integrated-server"));
         statsDump = Boolean.parseBoolean(notNull(props, "stats-dump"));
         statsAllPackets = Boolean.parseBoolean(notNull(props, "stats-all-packets"));
     }
