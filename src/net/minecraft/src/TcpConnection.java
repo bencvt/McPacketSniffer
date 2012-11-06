@@ -88,6 +88,10 @@ public class TcpConnection implements INetworkManager
 
     // ==== Begin modified code
     public static final PacketHooks packetHooksClient = new PacketHooks();
+    // Because the code paths are completely different depending on whether the
+    // user is disconnecting actively or passively, and can even overlap in
+    // some scenarios, use a flag so we only dispatch one close event.
+    private boolean sentCloseEvent;
     static { packetHooksClient.load(); }
     // ==== End modified code
 
@@ -432,7 +436,10 @@ public class TcpConnection implements INetworkManager
                 ;
             }
             // ==== Begin modified code
-            packetHooksClient.dispatchCloseConnectionEvent(this, par1Str, par2ArrayOfObj);
+            if (!sentCloseEvent) {
+                packetHooksClient.dispatchCloseConnectionEvent(this, par1Str, par2ArrayOfObj);
+                sentCloseEvent = true;
+            }
             // ==== End modified code
         }
     }
@@ -502,6 +509,12 @@ public class TcpConnection implements INetworkManager
             this.isServerTerminating = true;
             this.readThread.interrupt();
             (new TcpMonitorThread(this)).start();
+            // ==== Begin modified code
+            if (!sentCloseEvent) {
+                packetHooksClient.dispatchCloseConnectionEvent(this, "Quitting", new Object[] {});
+                sentCloseEvent = true;
+            }
+            // ==== End modified code
         }
     }
 

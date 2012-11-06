@@ -37,7 +37,7 @@ import java.util.zip.ZipInputStream;
  * @author bencvt
  */
 public class PacketHooks {
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
 
     public interface ClientPacketEventListener {
         /**
@@ -48,12 +48,15 @@ public class PacketHooks {
 
         /**
          * This event occurs whenever a TcpConnection or MemoryConnection
-         * closes.
+         * closes. This event will not be fired if the client is closed without
+         * disconnecting first (or if the client crashes, of course.)
          * 
          * @param connection
          * @param reason the reason the connection was closed, e.g.
-         *               "disconnect.timeout", "disconnect.closed".
-         *               Will always be "Quitting" for MemoryConnections.
+         *               "disconnect.timeout", "disconnect.closed". Will be
+         *               "Quitting" if the client is actively disconnecting
+         *               (i.e., they clicked the disconnect button rather than
+         *               being kicked or experiencing a network error).
          * @param reasonArgs if this array is non-empty then reason's localized
          *                   string is intended for use in String.format with
          *                   these arguments. Only present for certain error

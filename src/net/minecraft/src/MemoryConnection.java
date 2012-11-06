@@ -23,14 +23,19 @@ public class MemoryConnection implements INetworkManager
     // ==== Begin modified code
     public static final PacketHooks packetHooksClient = new PacketHooks();
     static { packetHooksClient.load(); }
-    public boolean clientSide;
+    public final boolean clientSide;
+    // Because the code paths are completely different depending on whether the
+    // user is disconnecting actively or passively, and can even overlap in
+    // some scenarios, use a flag so we only dispatch one close event.
+    private boolean sentCloseEvent;
     // ==== End modified code
 
     public MemoryConnection(NetHandler par1NetHandler) throws IOException
     {
         this.myNetHandler = par1NetHandler;
         // ==== Begin modified code
-        // HACK: to minimize the number of classes we have to patch, examine the stack track to see who created this connection
+        // HACK: to minimize the number of classes we have to patch, examine the
+        // stack trace to see who created this connection.
         clientSide = Thread.currentThread().getStackTrace()[2].getClassName().equals(NetClientHandler.class.getName());
         if (clientSide) {
             packetHooksClient.dispatchNewConnectionEvent(this);
@@ -125,8 +130,9 @@ public class MemoryConnection implements INetworkManager
     {
         this.shuttingDown = true;
         // ==== Begin modified code
-        if (clientSide) {
+        if (clientSide && !sentCloseEvent) {
             packetHooksClient.dispatchCloseConnectionEvent(this, "Quitting", new Object[] {});
+            sentCloseEvent = true;
         }
         // ==== End modified code
     }
@@ -140,6 +146,12 @@ public class MemoryConnection implements INetworkManager
         this.shuttingDown = true;
         this.shutdownReason = par1Str;
         this.field_74439_g = par2ArrayOfObj;
+        // ==== Begin modified code
+        if (clientSide && !sentCloseEvent) {
+            packetHooksClient.dispatchCloseConnectionEvent(this, par1Str, par2ArrayOfObj);
+            sentCloseEvent = true;
+        }
+        // ==== End modified code
     }
 
     /**
