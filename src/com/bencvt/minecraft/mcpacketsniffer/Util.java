@@ -56,8 +56,19 @@ public abstract class Util {
 
     /**
      * For getting at those pesky private and obfuscated fields.
-     * @return the nth field of the specified type declared by obj's class,
-     *         or null if there was a reflection error.
+     * @return the nth (usually 0) field of the specified type declared by
+     *         obj's class, or null if there was a reflection error.
+     *         <p>
+     *         Caveat: this is not guaranteed to work correctly if there are
+     *         more than one declared fields of the same type on obj.
+     *         <p>
+     *         From {@link Class#getDeclaredFields}: "The elements in the
+     *         array returned are not sorted and are not in any particular
+     *         order."
+     *         <p>
+     *         In practice things work as expected even if there are multiple
+     *         fields of the same type, but this is dependent on the JVM
+     *         implementation.
      */
     @SuppressWarnings("rawtypes")
     public static Object getFieldByType(Object obj, Class type, int n) {
