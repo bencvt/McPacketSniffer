@@ -14,7 +14,6 @@ public class Options {
     public static final File OPTIONS_FILE = new File(Controller.getBaseDir(), "options.txt");
     private static long lastModified;
 
-    // TODO: implement newFilePerServer and statsDump
     public final boolean newFilePerConnection;
     public final boolean newFilePerServer;
     public final boolean integratedServer;

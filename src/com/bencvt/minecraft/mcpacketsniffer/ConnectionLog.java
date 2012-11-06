@@ -40,17 +40,17 @@ public class ConnectionLog {
         Controller.getEventLog().info("starting log for " + connectionAddress);
 
         // determine log file name
-        File outputDir = Controller.getBaseDir();
+        File outputDir = new File(Controller.getBaseDir(), "logs");
+        outputDir.mkdirs();
         String suffix = "";
         if (Controller.getOptions().newFilePerConnection) {
             // e.g., "_20120518_133948_mc.example.com"
-            suffix = "_" + PacketLoggersBase.timestampToString(now)
+            suffix += "_" + PacketLoggersBase.timestampToString(now)
                     .replace(' ', '_').replaceAll("[:\\-]", "").substring(0, 15);
             suffix += "_" + connectionAddress;
-            // use a subdirectory
-            outputDir = new File(outputDir, "logs");
+        } else if (Controller.getOptions().newFilePerServer) {
+            suffix += "_" + connectionAddress;
         }
-        outputDir.mkdirs();
         File logFile = new File(outputDir, "packets" + suffix + ".txt");
 
         // open file
@@ -63,15 +63,17 @@ public class ConnectionLog {
             return false;
         }
 
-        // start recording stats
-        try {
-            stats = new StatRecorder(connectionAddress, now, new File(outputDir, "stats" + suffix + ".txt"));
-            stats.start();
-        } catch (Exception e) {
-            Controller.getEventLog().log(Level.SEVERE, "unable to start recording stats", e);
-            logWriter.close();
-            logWriter = null;
-            return false;
+        if (Controller.getOptions().statsDump) {
+            // start recording stats
+            try {
+                stats = new StatRecorder(connectionAddress, now, new File(outputDir, "stats" + suffix + ".txt"));
+                stats.start();
+            } catch (Exception e) {
+                Controller.getEventLog().log(Level.SEVERE, "unable to start recording stats", e);
+                logWriter.close();
+                logWriter = null;
+                return false;
+            }
         }
 
         if (fileExists) {
@@ -127,7 +129,9 @@ public class ConnectionLog {
                 logWriter = null;
             }
 
-            stats.stop();
+            if (stats != null) {
+                stats.stop();
+            }
         }
     }
 
@@ -136,8 +140,10 @@ public class ConnectionLog {
             return;
         }
 
-        // increment stats
-        stats.record(dir, packet.getPacketId(), packet.getPacketSize());
+        if (stats != null) {
+            // increment stats
+            stats.record(dir, packet.getPacketId(), packet.getPacketSize());
+        }
 
         // filter packets
         if (!Controller.packetFilter.shouldLogPacket(dir, packet)) {
