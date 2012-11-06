@@ -1,5 +1,8 @@
 ## implemented but not yet released
+- updated for Minecraft 1.4.3 (protocol version 47)
 - ModLoader/Forge is no longer required
+- added new-file-per-server and stats-enable options
+- fixed missing disconnect messages
 
 ## 3.0
 - updated for Minecraft 1.4.2 (protocol version 47)

@@ -10,7 +10,10 @@ import java.util.logging.Level;
 import net.minecraft.client.Minecraft;
 
 public class Options {
+    // TODO: refactor these to public final
+    // TODO: implement newFilePerServer and statsDump
     public boolean NEW_FILE_PER_CONNECTION;
+    public boolean NEW_FILE_PER_SERVER;
     public boolean INTEGRATED_SERVER;
     public HashSet<Integer> PACKET_WHITELIST = new HashSet<Integer>();
     public boolean FLUSH_AFTER_EVERY_PACKET;
@@ -20,6 +23,7 @@ public class Options {
     public boolean SUMMARIZE_BINARY_DATA;
     public String COLOR_ESCAPE;
     public boolean LOG_MISSING_CODES;
+    public boolean STATS_DUMP;
     public boolean STATS_ALL_PACKETS;
 
     private static long lastModified;
@@ -61,6 +65,7 @@ public class Options {
 
     private void loadWork(Properties properties) {
         NEW_FILE_PER_CONNECTION = Boolean.parseBoolean(properties.getProperty("new-file-per-connection"));
+        NEW_FILE_PER_SERVER = Boolean.parseBoolean(properties.getProperty("new-file-per-server"));
         INTEGRATED_SERVER = Boolean.parseBoolean(properties.getProperty("integrated-server"));
         loadIntegerList(PACKET_WHITELIST, properties.getProperty("packet-whitelist"));
         FLUSH_AFTER_EVERY_PACKET = Boolean.parseBoolean(properties.getProperty("flush-after-every-packet"));
@@ -70,6 +75,7 @@ public class Options {
         SUMMARIZE_BINARY_DATA = Boolean.parseBoolean(properties.getProperty("summarize-binary-data"));
         COLOR_ESCAPE = properties.getProperty("color-escape").trim();
         LOG_MISSING_CODES = Boolean.parseBoolean(properties.getProperty("log-missing-codes"));
+        STATS_DUMP = Boolean.parseBoolean(properties.getProperty("stats-dump"));
         STATS_ALL_PACKETS = Boolean.parseBoolean(properties.getProperty("stats-all-packets"));
     }
 
