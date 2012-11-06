@@ -471,7 +471,7 @@ public class PacketLoggers extends PacketLoggersBase {
         // HACK: because tempLength is private
         line.append(" compressedsize=").append(packet.getPacketSize() - 17);
         line.append(" chunkdata=");
-        if (Controller.getOptions().SUMMARIZE_BINARY_DATA) {
+        if (Controller.getOptions().summarizeBinaryData) {
             line.append(packet.func_73593_d().length).append(" bytes");
         } else {
             logByteArrayHexDump(line, packet.func_73593_d());
@@ -555,7 +555,7 @@ public class PacketLoggers extends PacketLoggersBase {
             line.append(" sections=0x").append(Integer.toHexString(packet.field_73590_a[i]));
             line.append(" addsections=0x").append(Integer.toHexString(packet.field_73588_b[i]));
             line.append(" chunkdata=");
-            if (Controller.getOptions().SUMMARIZE_BINARY_DATA) {
+            if (Controller.getOptions().summarizeBinaryData) {
                 line.append(packet.func_73583_c(i).length).append(" bytes");
             } else {
                 logByteArrayHexDump(line, packet.func_73583_c(i));
@@ -710,7 +710,7 @@ public class PacketLoggers extends PacketLoggersBase {
         logItemType(line, packet.itemID);
         line.append(" uniqueid=").append(packet.uniqueID); // stored as item damage
         line.append(" data=");
-        if (Controller.getOptions().SUMMARIZE_BINARY_DATA) {
+        if (Controller.getOptions().summarizeBinaryData) {
             line.append(packet.itemData.length).append(" bytes");
         } else {
             logByteArrayHexDump(line, packet.itemData);

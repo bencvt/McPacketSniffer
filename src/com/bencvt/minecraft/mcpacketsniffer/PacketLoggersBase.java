@@ -81,8 +81,8 @@ public abstract class PacketLoggersBase {
             // unprintable or unicode
             char ch = s.charAt(i);
             if (ch > 0x7f || ch < 0x20) {
-                if (ch == '\u00A7' && !Controller.getOptions().COLOR_ESCAPE.isEmpty()) {
-                    line.append(Controller.getOptions().COLOR_ESCAPE);
+                if (ch == '\u00A7' && !Controller.getOptions().colorEscape.isEmpty()) {
+                    line.append(Controller.getOptions().colorEscape);
                 } else if (ch == '\n') {
                     line.append("\\n");
                 } else if (ch == '\r') {
@@ -148,11 +148,11 @@ public abstract class PacketLoggersBase {
      */
     private static void logCoordsWork(StringBuilder line, int blockX, int blockY, int blockZ) {
         line.append('(');
-        if (Controller.getOptions().COORDS_INCLUDE_REGION) {
+        if (Controller.getOptions().coordsIncludeRegion) {
             line.append(blockX >> 9).append(',');
             line.append(blockZ >> 9).append(';');
         }
-        if (Controller.getOptions().COORDS_INCLUDE_CHUNK) {
+        if (Controller.getOptions().coordsIncludeChunk) {
             line.append(blockX >> 4).append(',');
             line.append(blockZ >> 4).append(';');
         }

@@ -26,7 +26,7 @@ public class Controller implements ClientPacketEventListener {
     public static final PacketFilter packetFilter = new PacketFilter();
     public static final PacketLoggers packetLoggers = new PacketLoggers();
     private final Logger eventLog;
-    private final Options options;
+    private Options options;
     private final File baseDir;
     private ConnectionLog activeConnectionLog;
 
@@ -47,7 +47,6 @@ public class Controller implements ClientPacketEventListener {
         eventLog.info("new Minecraft session, loaded " + NAME + " v" + VERSION);
 
         options = new Options();
-        options.load();
         Options.watchFileForReload();
 
         PacketHooks.register(this);
@@ -58,6 +57,9 @@ public class Controller implements ClientPacketEventListener {
     }
     public static Options getOptions() {
         return getInstance().options;
+    }
+    public static void reloadOptions() {
+        getInstance().options = new Options();
     }
     public static File getBaseDir() {
         return getInstance().baseDir;
@@ -70,7 +72,7 @@ public class Controller implements ClientPacketEventListener {
             activeConnectionLog.stop("replaced"); // shouldn't happen
             activeConnectionLog = null;
         }
-        if (options.INTEGRATED_SERVER || !(connection instanceof MemoryConnection)) {
+        if (options.integratedServer || !(connection instanceof MemoryConnection)) {
             activeConnectionLog = new ConnectionLog(connection);
             activeConnectionLog.start();
         }

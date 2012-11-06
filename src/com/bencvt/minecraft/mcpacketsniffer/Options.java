@@ -3,6 +3,7 @@ package com.bencvt.minecraft.mcpacketsniffer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -10,92 +11,91 @@ import java.util.logging.Level;
 import net.minecraft.client.Minecraft;
 
 public class Options {
-    // TODO: refactor these to public final
-    // TODO: implement newFilePerServer and statsDump
-    public boolean NEW_FILE_PER_CONNECTION;
-    public boolean NEW_FILE_PER_SERVER;
-    public boolean INTEGRATED_SERVER;
-    public HashSet<Integer> PACKET_WHITELIST = new HashSet<Integer>();
-    public boolean FLUSH_AFTER_EVERY_PACKET;
-    public long FLUSH_INTERVAL;
-    public boolean COORDS_INCLUDE_REGION;
-    public boolean COORDS_INCLUDE_CHUNK;
-    public boolean SUMMARIZE_BINARY_DATA;
-    public String COLOR_ESCAPE;
-    public boolean LOG_MISSING_CODES;
-    public boolean STATS_DUMP;
-    public boolean STATS_ALL_PACKETS;
-
+    public static final File OPTIONS_FILE = new File(Controller.getBaseDir(), "options.txt");
     private static long lastModified;
 
-    public void load() {
-        File optionsFile = getOptionsFile();
-        if (!optionsFile.exists()) {
-            copyDefaults(optionsFile);
+    // TODO: implement newFilePerServer and statsDump
+    public final boolean newFilePerConnection;
+    public final boolean newFilePerServer;
+    public final boolean integratedServer;
+    public final Collection<Integer> packetWhitelist;
+    public final boolean flushAfterEveryPacket;
+    public final long flushInterval;
+    public final boolean coordsIncludeRegion;
+    public final boolean coordsIncludeChunk;
+    public final boolean summarizeBinaryData;
+    public final String colorEscape;
+    public final boolean logMissingCodes;
+    public final boolean statsDump;
+    public final boolean statsAllPackets;
+
+    public Options() {
+        Properties props = loadProperties();
+        newFilePerConnection = Boolean.parseBoolean(props.getProperty("new-file-per-connection"));
+        newFilePerServer = Boolean.parseBoolean(props.getProperty("new-file-per-server"));
+        integratedServer = Boolean.parseBoolean(props.getProperty("integrated-server"));
+        packetWhitelist = loadIntegerCollection(props.getProperty("packet-whitelist"), new HashSet<Integer>(), true);
+        flushAfterEveryPacket = Boolean.parseBoolean(props.getProperty("flush-after-every-packet"));
+        flushInterval = Long.parseLong(props.getProperty("flush-interval"));
+        coordsIncludeRegion = Boolean.parseBoolean(props.getProperty("coords-include-region"));
+        coordsIncludeChunk = Boolean.parseBoolean(props.getProperty("coords-include-chunk"));
+        summarizeBinaryData = Boolean.parseBoolean(props.getProperty("summarize-binary-data"));
+        colorEscape = props.getProperty("color-escape").trim();
+        logMissingCodes = Boolean.parseBoolean(props.getProperty("log-missing-codes"));
+        statsDump = Boolean.parseBoolean(props.getProperty("stats-dump"));
+        statsAllPackets = Boolean.parseBoolean(props.getProperty("stats-all-packets"));
+    }
+
+    private static Properties loadProperties() {
+        if (!OPTIONS_FILE.exists()) {
+            copyDefaults();
         }
         Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream(optionsFile));
-            loadWork(properties);
+            properties.load(new FileInputStream(OPTIONS_FILE));
         } catch (Exception softFail) {
             try {
-                File moveTo = optionsFile;
+                File moveTo = OPTIONS_FILE;
                 for (int i = 0; moveTo.exists(); i++) {
                     moveTo = new File(Controller.getBaseDir(), "options_" + i + "_invalid.txt");
                 }
-                optionsFile.renameTo(moveTo);
+                OPTIONS_FILE.renameTo(moveTo);
                 Controller.getEventLog().log(Level.SEVERE,
                         "Unable to load options. Renamed to " + moveTo, softFail);
-                copyDefaults(optionsFile);
-                properties.load(new FileInputStream(optionsFile));
-                loadWork(properties);
+                copyDefaults();
+                properties.load(new FileInputStream(OPTIONS_FILE));
             } catch (Exception hardFail) {
                 Controller.getEventLog().log(Level.SEVERE,
                         "unable to gracefully handle invalid options", hardFail);
                 throw new RuntimeException(hardFail);
             }
         }
-        lastModified = optionsFile.lastModified();
+        lastModified = OPTIONS_FILE.lastModified();
+        return properties;
     }
 
-    private static void copyDefaults(File optionsFile) {
-        Util.copyResourceToFile("/com/bencvt/minecraft/mcpacketsniffer/default-options.properties", optionsFile);
-        Controller.getEventLog().info("Restored " + optionsFile);
+    private static void copyDefaults() {
+        Util.copyResourceToFile("default-options.properties", OPTIONS_FILE);
+        Controller.getEventLog().info("Restored " + OPTIONS_FILE);
     }
 
-    private void loadWork(Properties properties) {
-        NEW_FILE_PER_CONNECTION = Boolean.parseBoolean(properties.getProperty("new-file-per-connection"));
-        NEW_FILE_PER_SERVER = Boolean.parseBoolean(properties.getProperty("new-file-per-server"));
-        INTEGRATED_SERVER = Boolean.parseBoolean(properties.getProperty("integrated-server"));
-        loadIntegerList(PACKET_WHITELIST, properties.getProperty("packet-whitelist"));
-        FLUSH_AFTER_EVERY_PACKET = Boolean.parseBoolean(properties.getProperty("flush-after-every-packet"));
-        FLUSH_INTERVAL = Long.parseLong(properties.getProperty("flush-interval"));
-        COORDS_INCLUDE_REGION = Boolean.parseBoolean(properties.getProperty("coords-include-region"));
-        COORDS_INCLUDE_CHUNK = Boolean.parseBoolean(properties.getProperty("coords-include-chunk"));
-        SUMMARIZE_BINARY_DATA = Boolean.parseBoolean(properties.getProperty("summarize-binary-data"));
-        COLOR_ESCAPE = properties.getProperty("color-escape").trim();
-        LOG_MISSING_CODES = Boolean.parseBoolean(properties.getProperty("log-missing-codes"));
-        STATS_DUMP = Boolean.parseBoolean(properties.getProperty("stats-dump"));
-        STATS_ALL_PACKETS = Boolean.parseBoolean(properties.getProperty("stats-all-packets"));
-    }
-
-    private static void loadIntegerList(Collection<Integer> list, String items) {
-        list.clear();
+    private static Collection<Integer> loadIntegerCollection(String items, Collection<Integer> storage, boolean makeUnmodifiable) {
+        storage.clear();
         for (String item : items.split(",")) {
             item = item.trim();
             if (item.isEmpty()) {
                 continue;
             }
             if (item.startsWith("0x")) {
-                list.add(Integer.parseInt(item.substring(2), 16));
+                storage.add(Integer.parseInt(item.substring(2), 16));
             } else {
-                list.add(Integer.parseInt(item));
+                storage.add(Integer.parseInt(item));
             }
         }
-    }
-
-    public static File getOptionsFile() {
-        return new File(Controller.getBaseDir(), "options.txt");
+        if (makeUnmodifiable) {
+            return Collections.unmodifiableCollection(storage);
+        }
+        return storage;
     }
 
     public static void watchFileForReload() {
@@ -115,11 +115,10 @@ public class Options {
     }
 
     public static synchronized void reloadOptionsFileIfModified() {
-        File optionsFile = getOptionsFile();
-        if (!optionsFile.exists() || optionsFile.lastModified() > lastModified) {
-            Controller.getEventLog().info("Reloading " + optionsFile +
+        if (!OPTIONS_FILE.exists() || OPTIONS_FILE.lastModified() > lastModified) {
+            Controller.getEventLog().info("Reloading " + OPTIONS_FILE +
                     ". Some changes won't take effect until a new connection is established.");
-            Controller.getOptions().load();
+            Controller.reloadOptions();
         }
     }
 }

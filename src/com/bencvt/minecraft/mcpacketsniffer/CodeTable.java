@@ -151,7 +151,7 @@ public class CodeTable {
         } else {
             line.append(value);
         }
-        if (value == null && Controller.getOptions().LOG_MISSING_CODES && !missingCodes.contains(code)) {
+        if (value == null && Controller.getOptions().logMissingCodes && !missingCodes.contains(code)) {
             missingCodes.add(code);
             Controller.getEventLog().log(Level.WARNING,
                     "unrecognized code " + code + " for " + tableName,

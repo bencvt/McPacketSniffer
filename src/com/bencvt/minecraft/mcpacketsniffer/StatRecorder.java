@@ -97,7 +97,7 @@ public class StatRecorder {
         long packetTotal = 0L;
         long byteTotal = 0L;
         for (int i = 0; i < packetCounts.length; i++) {
-            if (Controller.getOptions().STATS_ALL_PACKETS || packetCounts[i] > 0) {
+            if (Controller.getOptions().statsAllPackets || packetCounts[i] > 0) {
                 String packetName = PacketInfo.getPacketShortName(i);
                 if (packetName == null) {
                     continue;

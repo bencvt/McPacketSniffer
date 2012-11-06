@@ -42,7 +42,7 @@ public class ConnectionLog {
         // determine log file name
         File outputDir = Controller.getBaseDir();
         String suffix = "";
-        if (Controller.getOptions().NEW_FILE_PER_CONNECTION) {
+        if (Controller.getOptions().newFilePerConnection) {
             // e.g., "_20120518_133948_mc.example.com"
             suffix = "_" + PacketLoggersBase.timestampToString(now)
                     .replace(' ', '_').replaceAll("[:\\-]", "").substring(0, 15);
@@ -86,7 +86,7 @@ public class ConnectionLog {
         logWriter.println(line.toString());
         logWriter.flush();
 
-        if (Controller.getOptions().FLUSH_INTERVAL > 0 && !Controller.getOptions().FLUSH_AFTER_EVERY_PACKET) {
+        if (Controller.getOptions().flushInterval > 0 && !Controller.getOptions().flushAfterEveryPacket) {
             startFlusherThread();
         }
 
@@ -104,7 +104,7 @@ public class ConnectionLog {
                         }
                     }
                     try {
-                        sleep(Math.max(1000, Controller.getOptions().FLUSH_INTERVAL));
+                        sleep(Math.max(1000, Controller.getOptions().flushInterval));
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -159,7 +159,7 @@ public class ConnectionLog {
 
     private void logLine(String line) {
         logWriter.println(line.toString());
-        if (Controller.getOptions().FLUSH_AFTER_EVERY_PACKET) {
+        if (Controller.getOptions().flushAfterEveryPacket) {
             logWriter.flush();
         }
     }
