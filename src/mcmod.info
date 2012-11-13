@@ -4,7 +4,7 @@
   "name": "McPacketSniffer",
   "description": "Automatically log packets to files, located in (minecraft-dir)/mods/McPacketSniffer.",
   "logoFile": "",
-  "version": "3.0-SNAPSHOT",
+  "version": "3.1-SNAPSHOT",
   "credits": "",
   "authors": [ "bencvt" ],
   "url": "https://github.com/bencvt/McPacketSniffer",
