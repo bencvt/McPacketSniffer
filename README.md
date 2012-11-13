@@ -40,12 +40,12 @@ Neither [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/) nor
 
 ## Compatibility
 
-McPacketSniffer modifies `bw.class` (MemoryConnection) and `bx.class`
+McPacketSniffer modifies `cf.class` (MemoryConnection) and `cg.class`
 (TcpConnection). Any other mod that modifies these classes will potentially be
 incompatible with McPacketSniffer.
 
 Note that Forge *does* modify these classes. However, McPacketSniffer provides a
-compatibility layer, verified working as of Forge 6.0.1. Just make sure to use
+compatibility layer, verified working as of Forge 6.3.0. Just make sure to use
 McPacketSniffer's version of these classes in your final `minecraft.jar`.
 
 ## Usage

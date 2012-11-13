@@ -1,7 +1,7 @@
 ## implemented but not yet released
-- updated for Minecraft 1.4.3 (protocol version 47)
+- updated for Minecraft 1.4.4 (protocol version 47)
 - ModLoader/Forge is no longer required
-- added new-file-per-server and stats-enable options
+- added `new-file-per-server` and `stats-dump` options
 - fixed missing disconnect messages
 
 ## 3.0

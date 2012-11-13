@@ -37,7 +37,7 @@ import java.util.zip.ZipInputStream;
  * @author bencvt
  */
 public class PacketHooks {
-    public static final int VERSION = 8;
+    public static final int VERSION = 9;
 
     public interface ClientPacketEventListener {
         /**
@@ -155,7 +155,7 @@ public class PacketHooks {
     }
 
     /**
-     * Forge compatibility layer, verified working as of Forge v6.0.1.
+     * Forge compatibility layer, verified working as of Forge v6.3.0.
      */
     protected void dispatchForgeRemoteCloseConnectionEvent(INetworkManager connection, NetHandler netHandler) {
         try {
