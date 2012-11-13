@@ -1,4 +1,4 @@
-## implemented but not yet released
+## 3.1
 - updated for Minecraft 1.4.4 (protocol version 47)
 - ModLoader/Forge is no longer required
 - added `new-file-per-server` and `stats-dump` options
